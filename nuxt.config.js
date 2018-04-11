@@ -1,11 +1,14 @@
 module.exports = {
   mode: 'spa',
   head: {
-    title: 'kadope',
+    title: 'ReCalendar',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'kadope' }
+      { hid: 'description', name: 'description', content: 'ReCalendar' }
+    ],
+    link: [
+      { rel: 'icon', type: 'image/png', sizes: '32x32', href: 'favicon.png' }
     ]
   },
   css: [

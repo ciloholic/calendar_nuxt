@@ -13,6 +13,7 @@
     <div v-for="w in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
       <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul :data-date="formatTime(days[w], 'YYYY-MM-DD')">
+        <!-- time list -->
         <li
           v-for="t in timeList"
           :key="t.id"
@@ -22,10 +23,11 @@
           @dragstart="dragstart"
           @dragend="dragend">
         </li>
+        <!-- event list -->
         <div
           v-for="event in dayEvent(days[w])"
           :key="event.recordId"
-          class="recordBlock"
+          class="eventBlock"
           :title="event.title"
           :data-project-id="event.projectId"
           :data-record-id="event.recordId"
@@ -152,7 +154,7 @@ export default {
   }
 
   .label-week a {
-    color: #fd0;
+    color: #ffc039;
     font-size: 13px;
   }
 }
@@ -219,7 +221,7 @@ export default {
     border-right: 1px solid #888;
   }
 
-  .recordBlock {
+  .eventBlock {
     border: 1px solid #fff;
     width: 100%;
     position: absolute;
