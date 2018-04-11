@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/earlyaccess/mplus1p.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: 1.6rem;
+  line-height: 1.6em;
+  font-family: 'Mplus 1p';
+  color: #fff;
+}
+
+li {
+  list-style: none;
+}
