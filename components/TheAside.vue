@@ -7,5 +7,6 @@
   background: rgba(255, 255, 255, 0.15);
   grid-area: aside;
   height: calc(100vh - 40px);
+  border-radius: 3px;
 }
 </style>

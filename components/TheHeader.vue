@@ -4,7 +4,7 @@
 
 <style lang="scss" scoped>
 .el-header {
-  background: #ffc039;
+  background: #dd8a61;
   grid-area: header;
   padding: 0;
 }

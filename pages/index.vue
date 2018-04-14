@@ -22,7 +22,7 @@ export default {
 
 <style lang="scss" scoped>
 .el-container {
-  background: #121258;
+  background: #3c3a33;
   width: 100vw;
   height: 100vh;
   padding-right: 15px;

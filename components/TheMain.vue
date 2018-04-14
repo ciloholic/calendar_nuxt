@@ -1,9 +1,13 @@
 <template>
   <el-main>
     <div class="label-week-group">
-      <div class="label-week"><a href="/XXXX-XX-XX">〜XXXX-XX-XX</a></div>
-      <div class="label-week">XXXX-XX-XX 〜 YYYY-YY-YY</div>
-      <div class="label-week"><a href="/YYYY-YY-YY">YYYY-YY-YY〜</a></div>
+      <div class="label-week">
+        <el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button>
+      </div>
+      <div class="label-week">{{ labelWeekText }}</div>
+      <div class="label-week">
+        <el-button size="mini" @click="onNextClick">Next<i class="el-icon-arrow-right el-icon-right"></i></el-button>
+      </div>
     </div>
     <div class="label-side-group">
       <ul>
@@ -17,7 +21,7 @@
         <li
           v-for="t in timeList"
           :key="t.id"
-          :class="'day-time m' + t.mm"
+          :class="`day-time m${t.mm}`"
           :data-time="t.id"
           draggable="true"
           @dragstart="dragstart"
@@ -52,6 +56,7 @@ export default {
         .slice(6),
       timeList: [],
       days: [],
+      currentDay: moment(),
       events: [
         {
           start: moment('2018-04-09 10:30', 'YYYY-MM-DD HH:mm'),
@@ -79,17 +84,21 @@ export default {
           projectId: 31,
           projectName: 'イベント０３',
           color: '#521b1b'
+        },
+        {
+          start: moment('2018-04-18 10:00', 'YYYY-MM-DD HH:mm'),
+          end: moment('2018-04-18 12:15', 'YYYY-MM-DD HH:mm'),
+          recordId: 83197,
+          title: 'TEST04',
+          projectId: 31,
+          projectName: 'イベント０４',
+          color: '#b2bb1b'
         }
       ]
     }
   },
   created() {
-    // 各曜日のmoment一覧を生成
-    Array.from(new Array(7))
-      .map((_, i) => i)
-      .forEach(i => {
-        this.days.push(moment().day(i))
-      })
+    this.setCalendar(moment())
     // 時刻一覧を生成
     const minutesList = Array.from(new Array(4)).map((_, i) => ('00' + i * 15).slice(-2))
     Array.from(this.dayList).forEach(i => {
@@ -98,17 +107,22 @@ export default {
       })
     })
   },
+  computed: {
+    labelWeekText: function() {
+      const min = Math.min.apply(null, this.weekList)
+      const max = Math.max.apply(null, this.weekList)
+      return `${this.formatTime(this.days[min], 'YYYY/MM/DD')} 〜 ${this.formatTime(this.days[max], 'MM/DD')}`
+    }
+  },
   methods: {
-    dragstart: e => {
-      console.log('start')
-      console.log(e)
-    },
-    dragend: e => {
-      console.log('end')
-      console.log(e)
-    },
-    dayEvent(dayMoment) {
-      return this.events.filter(event => event.start.isSame(dayMoment, 'day'))
+    setCalendar(dayMoment) {
+      // 各曜日のmoment一覧を生成
+      this.days = []
+      Array.from(new Array(7))
+        .map((_, i) => i)
+        .forEach(i => {
+          this.days.push(dayMoment.clone().day(i))
+        })
     },
     setStyle(event) {
       const template = 'background: __COLOR__;border-color: __COLOR__;top: __TOP__px;height: __HEIGHT__px;'
@@ -119,11 +133,28 @@ export default {
         .replace(/__TOP__/g, top)
         .replace(/__HEIGHT__/g, height)
     },
+    dayEvent(dayMoment) {
+      return this.events.filter(event => event.start.isSame(dayMoment, 'day'))
+    },
     isToday(dayMoment) {
       return moment().isSame(dayMoment, 'day')
     },
     formatTime(date, format) {
       return moment(date).format(format)
+    },
+    onPrevClick() {
+      this.setCalendar(this.currentDay.subtract(1, 'weeks'))
+    },
+    onNextClick() {
+      this.setCalendar(this.currentDay.add(1, 'weeks'))
+    },
+    dragstart: e => {
+      console.log('start')
+      console.log(e)
+    },
+    dragend: e => {
+      console.log('end')
+      console.log(e)
     }
   }
 }
@@ -141,6 +172,7 @@ export default {
   user-select: none;
   cursor: crosshair;
   position: relative;
+  border-radius: 3px;
 }
 
 .label-week-group {
@@ -154,7 +186,7 @@ export default {
   }
 
   .label-week a {
-    color: #ffc039;
+    color: #dd8a61;
     font-size: 13px;
   }
 }
