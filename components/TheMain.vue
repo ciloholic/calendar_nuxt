@@ -58,11 +58,12 @@
 import moment from 'moment'
 moment.locale('ja')
 
+const MIN_HEIGHT = 12
+const MIN_MINUTES = 15
+
 export default {
   data() {
     return {
-      MIN_HEIGHT: 12,
-      MIN_MINUTES: 15,
       weekList: Array.from(new Array(7)).map((_, i) => i),
       dayList: Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2)),
       currentDay: moment(),
@@ -86,7 +87,7 @@ export default {
     // 各曜日のmoment一覧を生成
     this.setCalendar(moment())
     // 時刻一覧を生成
-    const minutesList = Array.from(new Array(4)).map((_, i) => ('00' + i * this.MIN_MINUTES).slice(-2))
+    const minutesList = Array.from(new Array(4)).map((_, i) => ('00' + i * MIN_MINUTES).slice(-2))
     Array.from(this.dayList).forEach(i => {
       minutesList.forEach(j => {
         this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
@@ -108,8 +109,8 @@ export default {
       })
     },
     setStyle(event, targetEvent = false) {
-      const top = event.datetime.hours() * 48 + event.datetime.minutes() / this.MIN_MINUTES * this.MIN_HEIGHT
-      const height = event.minutes / this.MIN_MINUTES * this.MIN_HEIGHT
+      const top = event.datetime.hours() * 48 + event.datetime.minutes() / MIN_MINUTES * MIN_HEIGHT
+      const height = event.minutes / MIN_MINUTES * MIN_HEIGHT
       const color = targetEvent ? event.color : this.convRgba(event.color)
       return `background:${color};border-color:${event.color};top:${top}px;height:${height}px;`
     },
@@ -166,8 +167,8 @@ export default {
     },
     mouseup: function(e) {
       if (this.targetEvent.dragFlag) {
-        const minutes = e.pageY - this.targetEvent.startY + this.MIN_HEIGHT
-        this.targetEvent.minutes = Math.ceil(minutes / this.MIN_HEIGHT) * this.MIN_MINUTES
+        const minutes = e.pageY - this.targetEvent.startY + MIN_HEIGHT
+        this.targetEvent.minutes = Math.ceil(minutes / MIN_HEIGHT) * MIN_MINUTES
         this.addEvent()
         this.resetEvent()
       }
@@ -180,7 +181,7 @@ export default {
     mousedown: function(e) {
       this.targetEvent.dragFlag = true
       this.targetEvent.datetime = moment(e.target.dataset.date, 'YYYY-MM-DD HH:mm:ss')
-      this.targetEvent.minutes = this.MIN_MINUTES
+      this.targetEvent.minutes = MIN_MINUTES
       this.targetEvent.startY = e.pageY
       this.targetEvent.recordId = moment().unix()
       this.targetEvent.title = 'title'
@@ -190,9 +191,9 @@ export default {
     },
     mousemove: function(e) {
       if (this.targetEvent.dragFlag) {
-        const minutes = e.pageY - this.targetEvent.startY + this.MIN_HEIGHT
+        const minutes = e.pageY - this.targetEvent.startY + MIN_HEIGHT
         if (minutes > 0) {
-          this.targetEvent.minutes = Math.ceil(minutes / this.MIN_HEIGHT) * this.MIN_MINUTES
+          this.targetEvent.minutes = Math.ceil(minutes / MIN_HEIGHT) * MIN_MINUTES
         }
       }
     }
