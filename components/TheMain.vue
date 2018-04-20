@@ -49,6 +49,8 @@
         </div>
       </ul>
     </div>
+    <!-- time line -->
+    <!--<div class="time-line" style="top: 87px;"></div>-->
   </el-main>
 </template>
 
@@ -310,5 +312,14 @@ export default {
     line-height: 1.2em;
     text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
   }
+}
+
+.time-line {
+  border-top: 1px solid #dd8a61;
+  height: 1px;
+  position: absolute;
+  top: 72px;
+  left: 45px;
+  right: 10px;
 }
 </style>
