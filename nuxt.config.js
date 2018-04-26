@@ -1,5 +1,6 @@
 module.exports = {
   mode: 'spa',
+  loading: '~/components/TheLoading.vue',
   head: {
     title: 'ReCalendar',
     meta: [
@@ -12,9 +13,9 @@ module.exports = {
   css: [
     'element-ui/lib/theme-chalk/reset.css',
     'element-ui/lib/theme-chalk/index.css',
-    { src: '@assets/app.scss', lang: 'scss' }
+    { src: '~/assets/app.scss', lang: 'scss' }
   ],
-  plugins: ['@plugins/element-ui.js'],
+  plugins: ['~/plugins/element-ui.js'],
   build: {
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {

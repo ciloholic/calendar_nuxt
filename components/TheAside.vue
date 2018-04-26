@@ -10,7 +10,7 @@
     <el-button type="primary" size="mini" class="project-add-button" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
     <!-- project tree -->
     <el-tree
-      :data="projects"
+      :data="records"
       :props="defaultProps"
       :filter-node-method="filterTask"
       node-key="id"
@@ -18,11 +18,19 @@
       @node-click="taskClick">
       <span class="tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
-        <el-button type="text" size="mini" @click.stop="editProjectButton(node, data)"><i class="el-icon-error"></i></el-button>
+        <el-button v-if="data.children" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
+          <i class="el-icon-plus"></i>
+        </el-button>
+        <el-button v-if="data.children" type="text" size="mini" @click.stop="editProjectButton(node, data)">
+          <i class="el-icon-edit"></i>
+        </el-button>
+        <el-button v-if="!data.children" type="text" size="mini" @click.stop="editTaskButton(node, data)">
+          <i class="el-icon-edit"></i>
+        </el-button>
       </span>
     </el-tree>
     <!-- dialog - add project -->
-    <el-dialog title="プロジェクト追加" width="35%" :visible.sync="projectAddDialog" :close-on-click-modal="false">
+    <el-dialog title="プロジェクト追加" width="35%" :visible.sync="projectAddDialog">
       <el-form :model="projectForm">
         <el-form-item label="プロジェクト名:">
           <el-input v-model="projectForm.name"></el-input>
@@ -33,12 +41,12 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="projectAddDialog = false">キャンセル</el-button>
-        <el-button type="primary" @click="addProject" :disabled="false">追加</el-button>
+        <el-button @click="projectAddDialog = false;resetProjectForm();">キャンセル</el-button>
+        <el-button type="primary" @click="addProject" :disabled="disableProjectButton()">追加</el-button>
       </span>
     </el-dialog>
     <!-- dialog - edit project -->
-    <el-dialog title="プロジェクト編集" width="35%" :visible.sync="projectEditDialog" :close-on-click-modal="false">
+    <el-dialog title="プロジェクト編集" width="35%" :visible.sync="projectEditDialog">
       <el-form :model="projectForm">
         <el-form-item label="プロジェクト名:">
           <el-input v-model="projectForm.name"></el-input>
@@ -49,9 +57,33 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="projectEditDialog = false">キャンセル</el-button>
+        <el-button @click="projectEditDialog = false;resetProjectForm();">キャンセル</el-button>
         <el-button type="danger" @click="deleteProject">削除</el-button>
-        <el-button type="primary" @click="editProject" :disabled="false">更新</el-button>
+        <el-button type="primary" @click="editProject" :disabled="disableProjectButton()">更新</el-button>
+      </span>
+    </el-dialog>
+    <!-- dialog - add task -->
+    <el-dialog title="タスク追加" width="35%" :visible.sync="taskAddDialog">
+      <el-form :model="taskForm">
+        <el-form-item label="タスク名:">
+          <el-input v-model="taskForm.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="taskAddDialog = false;resetTaskForm();">キャンセル</el-button>
+        <el-button type="primary" @click="addTask" :disabled="disableTaskButton()">追加</el-button>
+      </span>
+    </el-dialog>
+    <!-- dialog - edit task -->
+    <el-dialog title="タスク編集" width="35%" :visible.sync="taskEditDialog">
+      <el-form :model="taskForm">
+        <el-form-item label="タスク名:">
+          <el-input v-model="taskForm.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="taskEditDialog = false;resetTaskForm();">キャンセル</el-button>
+        <el-button type="primary" @click="editTask" :disabled="disableTaskButton()">更新</el-button>
       </span>
     </el-dialog>
   </el-aside>
@@ -65,40 +97,37 @@ export default {
   data() {
     return {
       filterKeyword: '',
-      projects: [
+      records: [
         {
           id: moment().unix() + 1,
-          label: 'Level one 1',
+          name: 'Level one 1',
           color: '#900',
           children: [
             {
               id: moment().unix() + 2,
-              label: 'Level two 1-1',
-              color: '#090'
+              name: 'Level two 1-1'
             }
           ]
         },
         {
           id: moment().unix() + 3,
-          label: 'Level one 2',
+          name: 'Level one 2',
           color: '#009',
           children: [
             {
               id: moment().unix() + 4,
-              label: 'Level two 2-1',
-              color: '#f00'
+              name: 'Level two 2-1'
             },
             {
               id: moment().unix() + 5,
-              label: 'Level two 2-2',
-              color: '#0f0'
+              name: 'Level two 2-2'
             }
           ]
         }
       ],
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'name'
       },
       projectAddDialog: false,
       projectEditDialog: false,
@@ -106,6 +135,14 @@ export default {
         id: '',
         name: '',
         color: '',
+        node: null,
+        data: null
+      },
+      taskAddDialog: false,
+      taskEditDialog: false,
+      taskForm: {
+        id: '',
+        name: '',
         node: null,
         data: null
       }
@@ -119,15 +156,16 @@ export default {
   methods: {
     filterTask(v, d) {
       if (!v) return true
-      return d.label.indexOf(v) !== -1
+      return d.name.indexOf(v) !== -1
     },
     addProject() {
       const obj = {
         id: moment().unix(),
-        label: this.projectForm.name,
-        color: this.projectForm.color
+        name: this.projectForm.name,
+        color: this.projectForm.color,
+        children: []
       }
-      this.projects.push(obj)
+      this.records.push(obj)
       this.resetProjectForm()
       this.projectAddDialog = false
     },
@@ -135,18 +173,14 @@ export default {
       const parent = this.projectForm.node.parent
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === this.projectForm.data.id)
-      const obj = {
-        id: this.projectForm.id,
-        label: this.projectForm.name,
-        color: this.projectForm.color
-      }
-      children.splice(index, 1, obj)
+      children[index]['name'] = this.projectForm.name
+      children[index]['color'] = this.projectForm.color
       this.resetProjectForm()
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
       this.projectForm.id = data.id
-      this.projectForm.name = data.label
+      this.projectForm.name = data.name
       this.projectForm.color = data.color
       this.projectForm.node = node
       this.projectForm.data = data
@@ -157,6 +191,15 @@ export default {
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === this.projectForm.data.id)
       children.splice(index, 1)
+      this.projectEditDialog = false
+    },
+    disableProjectButton() {
+      return !(
+        this.projectForm.name != null &&
+        this.projectForm.color != null &&
+        this.projectForm.name.length > 0 &&
+        this.projectForm.color.length > 0
+      )
     },
     resetProjectForm() {
       this.projectForm.id = ''
@@ -164,6 +207,49 @@ export default {
       this.projectForm.color = ''
       this.projectForm.node = null
       this.projectForm.data = null
+    },
+    addTask() {
+      const parent = this.taskForm.node.parent
+      const children = parent.data
+      const index = children.findIndex(d => d.id === this.taskForm.data.id)
+      const obj = {
+        id: moment().unix(),
+        name: this.taskForm.name
+      }
+      this.records[index].children.push(obj)
+      this.resetTaskForm()
+      this.taskAddDialog = false
+    },
+    addTaskButton(node, data) {
+      this.taskForm.id = ''
+      this.taskForm.name = ''
+      this.taskForm.node = node
+      this.taskForm.data = data
+      this.taskAddDialog = true
+    },
+    editTask() {
+      const parent = this.taskForm.node.parent
+      const children = parent.data.children
+      const index = children.findIndex(d => d.id === this.taskForm.data.id)
+      children[index]['name'] = this.taskForm.name
+      this.resetTaskForm()
+      this.taskEditDialog = false
+    },
+    editTaskButton(node, data) {
+      this.taskForm.id = data.id
+      this.taskForm.name = data.name
+      this.taskForm.node = node
+      this.taskForm.data = data
+      this.taskEditDialog = true
+    },
+    disableTaskButton() {
+      return !(this.taskForm.name != null && this.taskForm.name.length > 0)
+    },
+    resetTaskForm() {
+      this.taskForm.id = ''
+      this.taskForm.name = ''
+      this.taskForm.node = null
+      this.taskForm.data = null
     },
     taskClick(data) {
       console.log(data)
@@ -173,6 +259,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-button + .el-button {
+  margin-left: 5px;
+}
+
 .el-aside {
   background: rgba(255, 255, 255, 0.15);
   grid-area: aside;
@@ -215,6 +305,10 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+
+    .add-button {
+      margin-left: auto;
+    }
   }
 }
 </style>
