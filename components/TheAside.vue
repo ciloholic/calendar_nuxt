@@ -83,6 +83,7 @@
       </el-form>
       <span slot="footer">
         <el-button @click="taskEditDialog = false;resetTaskForm();">キャンセル</el-button>
+        <el-button type="danger" @click="deleteTask">削除</el-button>
         <el-button type="primary" @click="editTask" :disabled="disableTaskButton()">更新</el-button>
       </span>
     </el-dialog>
@@ -241,6 +242,13 @@ export default {
       this.taskForm.node = node
       this.taskForm.data = data
       this.taskEditDialog = true
+    },
+    deleteTask() {
+      const parent = this.taskForm.node.parent
+      const children = parent.data.children
+      const index = children.findIndex(d => d.id === this.taskForm.data.id)
+      children.splice(index, 1)
+      this.taskEditDialog = false
     },
     disableTaskButton() {
       return !(this.taskForm.name != null && this.taskForm.name.length > 0)
