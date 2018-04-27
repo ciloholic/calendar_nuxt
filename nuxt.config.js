@@ -16,6 +16,8 @@ module.exports = {
     { src: '~/assets/app.scss', lang: 'scss' }
   ],
   plugins: ['~/plugins/element-ui.js'],
+  modules: ['@nuxtjs/axios'],
+  axios: {},
   build: {
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {
