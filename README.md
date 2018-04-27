@@ -1,4 +1,4 @@
-# calendar_nuxt
+# re_calendar
 
 ``` bash
 yarn

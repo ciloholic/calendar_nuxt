@@ -1,22 +1,18 @@
 <template>
   <el-aside width="100vw">
     <!-- search -->
-    <el-input
-      size="mini"
-      placeholder="タスクを検索"
-      v-model="filterKeyword">
-    </el-input>
+    <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
     <!-- project add button -->
     <el-button type="primary" size="mini" class="project-add-button" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
-    <!-- project tree -->
+    <!-- project node tree -->
     <el-tree
       :data="records"
       :props="defaultProps"
       :filter-node-method="filterTask"
       node-key="id"
       ref="taskTree"
-      @node-click="taskClick">
-      <span class="tree-node" slot-scope="{ node, data }">
+      @node-click="nodeClick">
+      <span class="node-tree" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
         <el-button v-if="data.children" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-plus"></i>
@@ -126,27 +122,13 @@ export default {
           ]
         }
       ],
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      },
+      defaultProps: { children: 'children', label: 'name' },
       projectAddDialog: false,
       projectEditDialog: false,
-      projectForm: {
-        id: '',
-        name: '',
-        color: '',
-        node: null,
-        data: null
-      },
+      projectForm: { id: '', name: '', color: '', node: null, data: null },
       taskAddDialog: false,
       taskEditDialog: false,
-      taskForm: {
-        id: '',
-        name: '',
-        node: null,
-        data: null
-      }
+      taskForm: { id: '', name: '', node: null, data: null }
     }
   },
   watch: {
@@ -188,11 +170,22 @@ export default {
       this.projectEditDialog = true
     },
     deleteProject() {
-      const parent = this.projectForm.node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === this.projectForm.data.id)
-      children.splice(index, 1)
-      this.projectEditDialog = false
+      this.$confirm('本当にプロジェクトを削除しますか？', '確認', {
+        confirmButtonText: 'はい',
+        cancelButtonText: 'いいえ',
+        type: 'warning'
+      })
+        .then(() => {
+          const parent = this.projectForm.node.parent
+          const children = parent.data
+          const index = children.findIndex(d => d.id === this.projectForm.data.id)
+          children.splice(index, 1)
+          this.projectEditDialog = false
+          this.$message({ type: 'success', message: '削除しました' })
+        })
+        .catch(() => {
+          this.$message({ type: 'info', message: 'キャンセルしました' })
+        })
     },
     disableProjectButton() {
       return !(
@@ -244,11 +237,22 @@ export default {
       this.taskEditDialog = true
     },
     deleteTask() {
-      const parent = this.taskForm.node.parent
-      const children = parent.data.children
-      const index = children.findIndex(d => d.id === this.taskForm.data.id)
-      children.splice(index, 1)
-      this.taskEditDialog = false
+      this.$confirm('本当にタスクを削除しますか？', '確認', {
+        confirmButtonText: 'はい',
+        cancelButtonText: 'いいえ',
+        type: 'warning'
+      })
+        .then(() => {
+          const parent = this.taskForm.node.parent
+          const children = parent.data.children
+          const index = children.findIndex(d => d.id === this.taskForm.data.id)
+          children.splice(index, 1)
+          this.taskEditDialog = false
+          this.$message({ type: 'success', message: '削除しました' })
+        })
+        .catch(() => {
+          this.$message({ type: 'info', message: 'キャンセルしました' })
+        })
     },
     disableTaskButton() {
       return !(this.taskForm.name != null && this.taskForm.name.length > 0)
@@ -259,7 +263,7 @@ export default {
       this.taskForm.node = null
       this.taskForm.data = null
     },
-    taskClick(data) {
+    nodeClick(data) {
       console.log(data)
     }
   }
@@ -306,7 +310,7 @@ export default {
     }
   }
 
-  .tree-node {
+  .node-tree {
     flex: 1;
     display: flex;
     align-items: center;
@@ -322,7 +326,7 @@ export default {
 </style>
 
 <style lang="scss">
-.el-tree-node__content:hover {
+.el-node-tree__content:hover {
   border-radius: 3px;
 }
 
