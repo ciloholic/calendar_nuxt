@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 module.exports = {
   mode: 'spa',
   loading: '~/components/TheLoading.vue',
@@ -16,7 +18,7 @@ module.exports = {
     { src: '~/assets/app.scss', lang: 'scss' }
   ],
   plugins: ['~/plugins/element-ui.js'],
-  modules: ['@nuxtjs/axios'],
+  modules: ['@nuxtjs/dotenv', '@nuxtjs/axios'],
   axios: {},
   build: {
     extend(config, { isDev, isClient }) {

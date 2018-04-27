@@ -10,8 +10,7 @@
       :props="defaultProps"
       :filter-node-method="filterTask"
       node-key="id"
-      ref="taskTree"
-      @node-click="nodeClick">
+      ref="taskTree">
       <span class="node-tree" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
         <el-button v-if="data.children" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
@@ -87,6 +86,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 moment.locale('ja')
 
@@ -94,34 +94,6 @@ export default {
   data() {
     return {
       filterKeyword: '',
-      records: [
-        {
-          id: moment().unix() + 1,
-          name: 'Level one 1',
-          color: '#900',
-          children: [
-            {
-              id: moment().unix() + 2,
-              name: 'Level two 1-1'
-            }
-          ]
-        },
-        {
-          id: moment().unix() + 3,
-          name: 'Level one 2',
-          color: '#009',
-          children: [
-            {
-              id: moment().unix() + 4,
-              name: 'Level two 2-1'
-            },
-            {
-              id: moment().unix() + 5,
-              name: 'Level two 2-2'
-            }
-          ]
-        }
-      ],
       defaultProps: { children: 'children', label: 'name' },
       projectAddDialog: false,
       projectEditDialog: false,
@@ -130,6 +102,12 @@ export default {
       taskEditDialog: false,
       taskForm: { id: '', name: '', node: null, data: null }
     }
+  },
+  async mounted() {
+    await Promise.all([this.records.length ? Promise.resolve() : this.$store.dispatch('INIT_RECORDS')])
+  },
+  computed: {
+    ...mapGetters(['records'])
   },
   watch: {
     filterKeyword(v) {
@@ -262,9 +240,6 @@ export default {
       this.taskForm.name = ''
       this.taskForm.node = null
       this.taskForm.data = null
-    },
-    nodeClick(data) {
-      console.log(data)
     }
   }
 }
