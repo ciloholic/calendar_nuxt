@@ -62,27 +62,25 @@ const MIN_HEIGHT = 12
 const MIN_MINUTES = 15
 
 export default {
-  data() {
-    return {
-      weekList: Array.from(new Array(7)).map((_, i) => i),
-      dayList: Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2)),
-      currentDay: moment(),
-      timeList: [],
-      days: [],
-      events: [],
-      targetEvent: {
-        dragFlag: false,
-        datetime: null,
-        minutes: null,
-        startY: null,
-        recordId: null,
-        title: null,
-        projectId: null,
-        projectName: null,
-        color: null
-      }
+  data: () => ({
+    weekList: Array.from(new Array(7)).map((_, i) => i),
+    dayList: Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2)),
+    currentDay: moment(),
+    timeList: [],
+    days: [],
+    events: [],
+    targetEvent: {
+      dragFlag: false,
+      datetime: null,
+      minutes: null,
+      startY: null,
+      recordId: null,
+      title: null,
+      projectId: null,
+      projectName: null,
+      color: null
     }
-  },
+  }),
   created() {
     // 各曜日のmoment一覧を生成
     this.setCalendar(moment())

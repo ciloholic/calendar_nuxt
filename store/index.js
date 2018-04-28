@@ -3,27 +3,35 @@ import Vuex from 'vuex'
 import firebase from '~/plugins/firebase'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 const db = firebase.database()
-const recordsRef = db.ref('/records')
+const projectsRef = db.ref('/projects')
 
 Vue.use(Vuex)
 
-const createStore = () => {
+const store = () => {
   return new Vuex.Store({
     state: {
-      records: []
+      loading: false,
+      projects: []
     },
     getters: {
-      records: state => state.records
+      loading: state => state.loading,
+      projects: state => state.projects
     },
     mutations: {
+      setLoading(state, { loading }) {
+        state.loading = loading
+      },
       ...firebaseMutations
     },
     actions: {
-      INIT_RECORDS: firebaseAction(({ bindFirebaseRef }) => {
-        bindFirebaseRef('records', recordsRef)
+      SET_LOADING({ commit }, { loading }) {
+        commit('setLoading', { loading })
+      },
+      GET_PROJECTS: firebaseAction(({ bindFirebaseRef }) => {
+        bindFirebaseRef('projects', projectsRef)
       })
     }
   })
 }
 
-export default createStore
+export default store

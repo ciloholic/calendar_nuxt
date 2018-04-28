@@ -8,16 +8,19 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
-  data: () => ({
-    loading: false
-  }),
+  computed: {
+    ...mapGetters(['loading'])
+  },
   methods: {
+    ...mapActions({ setLoading: 'SET_LOADING' }),
     start() {
-      this.loading = true
+      this.setLoading({ loading: true })
     },
     finish() {
-      this.loading = false
+      this.setLoading({ loading: false })
     }
   }
 }

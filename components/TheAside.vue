@@ -6,7 +6,7 @@
     <el-button type="primary" size="mini" class="project-add-button" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
     <!-- project node tree -->
     <el-tree
-      :data="records"
+      :data="projects"
       :props="defaultProps"
       :filter-node-method="filterTask"
       node-key="id"
@@ -86,35 +86,34 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 moment.locale('ja')
 
 export default {
-  data() {
-    return {
-      filterKeyword: '',
-      defaultProps: { children: 'children', label: 'name' },
-      projectAddDialog: false,
-      projectEditDialog: false,
-      projectForm: { id: '', name: '', color: '', node: null, data: null },
-      taskAddDialog: false,
-      taskEditDialog: false,
-      taskForm: { id: '', name: '', node: null, data: null }
-    }
-  },
-  async mounted() {
-    await Promise.all([this.records.length ? Promise.resolve() : this.$store.dispatch('INIT_RECORDS')])
-  },
-  computed: {
-    ...mapGetters(['records'])
+  data: () => ({
+    filterKeyword: '',
+    defaultProps: { children: 'children', label: 'name' },
+    projectAddDialog: false,
+    projectEditDialog: false,
+    projectForm: { id: '', name: '', color: '', node: null, data: null },
+    taskAddDialog: false,
+    taskEditDialog: false,
+    taskForm: { id: '', name: '', node: null, data: null }
+  }),
+  created() {
+    this.getProjects()
   },
   watch: {
     filterKeyword(v) {
       this.$refs.taskTree.filter(v)
     }
   },
+  computed: {
+    ...mapGetters(['projects'])
+  },
   methods: {
+    ...mapActions({ setLoading: 'SET_LOADING', getProjects: 'GET_PROJECTS' }),
     filterTask(v, d) {
       if (!v) return true
       return d.name.indexOf(v) !== -1
@@ -126,7 +125,7 @@ export default {
         color: this.projectForm.color,
         children: []
       }
-      this.records.push(obj)
+      this.projects.push(obj)
       this.resetProjectForm()
       this.projectAddDialog = false
     },
@@ -188,7 +187,7 @@ export default {
         id: moment().unix(),
         name: this.taskForm.name
       }
-      this.records[index].children.push(obj)
+      this.projects[index].children.push(obj)
       this.resetTaskForm()
       this.taskAddDialog = false
     },
