@@ -29,6 +29,15 @@ const store = () => {
       },
       GET_PROJECTS: firebaseAction(({ bindFirebaseRef }) => {
         bindFirebaseRef('projects', projectsRef)
+      }),
+      ADD_PROJECTS: firebaseAction((context, obj) => {
+        projectsRef.push(obj)
+      }),
+      UPDATE_PROJECTS: firebaseAction((context, obj) => {
+        projectsRef.child(obj['.key']).update({ name: obj.name, color: obj.color })
+      }),
+      DELETE_PROJECTS: firebaseAction((context, key) => {
+        projectsRef.child(key).remove()
       })
     }
   })

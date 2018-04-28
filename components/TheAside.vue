@@ -9,17 +9,17 @@
       :data="projects"
       :props="defaultProps"
       :filter-node-method="filterTask"
-      node-key="id"
+      node-key=".key"
       ref="taskTree">
       <span class="node-tree" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
-        <el-button v-if="data.children" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
+        <el-button v-if="data.children != null" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-plus"></i>
         </el-button>
-        <el-button v-if="data.children" type="text" size="mini" @click.stop="editProjectButton(node, data)">
+        <el-button v-if="data.children != null" type="text" size="mini" @click.stop="editProjectButton(node, data)">
           <i class="el-icon-edit"></i>
         </el-button>
-        <el-button v-if="!data.children" type="text" size="mini" @click.stop="editTaskButton(node, data)">
+        <el-button v-if="data.children == null" type="text" size="mini" @click.stop="editTaskButton(node, data)">
           <i class="el-icon-edit"></i>
         </el-button>
       </span>
@@ -96,10 +96,10 @@ export default {
     defaultProps: { children: 'children', label: 'name' },
     projectAddDialog: false,
     projectEditDialog: false,
-    projectForm: { id: '', name: '', color: '', node: null, data: null },
+    projectForm: { name: '', color: '', node: null, data: null },
     taskAddDialog: false,
     taskEditDialog: false,
-    taskForm: { id: '', name: '', node: null, data: null }
+    taskForm: { name: '', node: null, data: null }
   }),
   created() {
     this.getProjects()
@@ -113,33 +113,38 @@ export default {
     ...mapGetters(['projects'])
   },
   methods: {
-    ...mapActions({ setLoading: 'SET_LOADING', getProjects: 'GET_PROJECTS' }),
+    ...mapActions({
+      setLoading: 'SET_LOADING',
+      getProjects: 'GET_PROJECTS',
+      addProjects: 'ADD_PROJECTS',
+      updateProjects: 'UPDATE_PROJECTS',
+      deleteProjects: 'DELETE_PROJECTS'
+    }),
     filterTask(v, d) {
       if (!v) return true
       return d.name.indexOf(v) !== -1
     },
     addProject() {
       const obj = {
-        id: moment().unix(),
         name: this.projectForm.name,
         color: this.projectForm.color,
-        children: []
+        children: false
       }
-      this.projects.push(obj)
+      this.addProjects(obj)
       this.resetProjectForm()
       this.projectAddDialog = false
     },
     editProject() {
-      const parent = this.projectForm.node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === this.projectForm.data.id)
-      children[index]['name'] = this.projectForm.name
-      children[index]['color'] = this.projectForm.color
+      const obj = {
+        '.key': this.projectForm.data['.key'],
+        name: this.projectForm.name,
+        color: this.projectForm.color
+      }
+      this.updateProjects(obj)
       this.resetProjectForm()
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
-      this.projectForm.id = data.id
       this.projectForm.name = data.name
       this.projectForm.color = data.color
       this.projectForm.node = node
@@ -153,10 +158,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          const parent = this.projectForm.node.parent
-          const children = parent.data
-          const index = children.findIndex(d => d.id === this.projectForm.data.id)
-          children.splice(index, 1)
+          this.deleteProjects(this.projectForm.data['.key'])
           this.projectEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -173,7 +175,6 @@ export default {
       )
     },
     resetProjectForm() {
-      this.projectForm.id = ''
       this.projectForm.name = ''
       this.projectForm.color = ''
       this.projectForm.node = null
@@ -192,7 +193,6 @@ export default {
       this.taskAddDialog = false
     },
     addTaskButton(node, data) {
-      this.taskForm.id = ''
       this.taskForm.name = ''
       this.taskForm.node = node
       this.taskForm.data = data
