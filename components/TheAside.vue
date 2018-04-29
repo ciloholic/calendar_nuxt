@@ -11,8 +11,8 @@
       :filter-node-method="filterTask"
       node-key=".key"
       ref="taskTree">
-      <span class="node-tree" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+      <div class="node-tree" slot-scope="{ node, data }">
+        <div class="node-tree__label">{{ node.label }}</div>
         <el-button v-if="!isParent(node)" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-plus"></i>
         </el-button>
@@ -22,7 +22,7 @@
         <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)">
           <i class="el-icon-edit"></i>
         </el-button>
-      </span>
+      </div>
     </el-tree>
     <!-- dialog - add project -->
     <el-dialog title="プロジェクト追加" width="35%" :visible.sync="projectAddDialog">
@@ -256,7 +256,7 @@ export default {
     background: #332a25;
     margin-bottom: 10px;
 
-    .el-input__inner {
+    &__inner {
       border-radius: 3px;
     }
   }
@@ -270,25 +270,25 @@ export default {
     margin-bottom: 10px;
     border-radius: 3px;
 
-    span {
-      user-select: none;
-    }
+    .node-tree {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      padding-right: 8px;
 
-    i {
-      color: #606266;
-    }
-  }
+      i {
+        color: #606266;
+      }
 
-  .node-tree {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
+      &__label {
+        user-select: none;
+      }
 
-    .add-button {
-      margin-left: auto;
+      .add-button {
+        margin-left: auto;
+      }
     }
   }
 }
