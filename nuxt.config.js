@@ -31,6 +31,6 @@ module.exports = {
         })
       }
     },
-    vendor: ['axios', 'element-ui', 'firebase', 'moment', 'vuexfire']
+    vendor: ['axios', 'element-ui', 'firebase', 'moment', 'uuid', 'vuexfire']
   }
 }

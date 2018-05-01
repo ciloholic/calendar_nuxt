@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import shortid from 'shortid'
+import uuid from 'uuid/v1'
 import firebase from '~/plugins/firebase'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 const db = firebase.database()
@@ -12,17 +12,26 @@ const store = () => {
   return new Vuex.Store({
     state: {
       loading: false,
-      projects: []
+      projects: [],
+      targetTask: {
+        key: null,
+        taskName: null,
+        color: null
+      }
     },
     getters: {
       loading: state => state.loading,
-      projects: state => state.projects
+      projects: state => state.projects,
+      targetTask: state => state.targetTask
     },
     mutations: {
       setLoading(state, { loading }) {
         state.loading = loading
       },
-      ...firebaseMutations
+      ...firebaseMutations,
+      setTargetTask(state, { targetTask }) {
+        state.targetTask = targetTask
+      }
     },
     actions: {
       SET_LOADING({ commit }, { loading }) {
@@ -46,7 +55,7 @@ const store = () => {
         children.on('value', snap => {
           tasks = snap.val()
         })
-        const newTask = { key: shortid.generate(), name: obj.name }
+        const newTask = { key: uuid(), name: obj.name }
         if (tasks != null) {
           tasks.push(newTask)
           children.set(tasks)
@@ -69,7 +78,10 @@ const store = () => {
         } else {
           children.remove()
         }
-      })
+      }),
+      SET_TARGET_TASK({ commit }, { targetTask }) {
+        commit('setTargetTask', { targetTask })
+      }
     }
   })
 }

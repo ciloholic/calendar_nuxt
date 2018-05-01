@@ -34,12 +34,9 @@
         <div
           v-for="event in dayEvent(days[w])"
           class="eventBlock"
-          :key="event.recordId"
-          :title="event.title"
-          :data-project-id="event.projectId"
-          :data-record-id="event.recordId"
+          :key="event.uuid"
           :style="setStyle(event)">
-          {{ event.projectName }}
+          {{ event.taskName }}
         </div>
         <!-- target event -->
         <div
@@ -55,6 +52,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+import uuid from 'uuid/v1'
 import moment from 'moment'
 moment.locale('ja')
 
@@ -73,12 +72,7 @@ export default {
       dragFlag: false,
       datetime: null,
       minutes: null,
-      startY: null,
-      recordId: null,
-      title: null,
-      projectId: null,
-      projectName: null,
-      color: null
+      startY: null
     }
   }),
   created() {
@@ -93,6 +87,7 @@ export default {
     })
   },
   computed: {
+    ...mapGetters(['targetTask']),
     labelWeekText: function() {
       const min = Math.min.apply(null, this.weekList)
       const max = Math.max.apply(null, this.weekList)
@@ -100,16 +95,19 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      setTargetTask: 'SET_TARGET_TASK'
+    }),
     setCalendar(dayMoment) {
       this.days = []
       this.weekList.forEach(i => {
         this.days.push(dayMoment.clone().day(i))
       })
     },
-    setStyle(event, targetEvent = false) {
+    setStyle(event, target = false) {
       const top = event.datetime.hours() * 48 + event.datetime.minutes() / MIN_MINUTES * MIN_HEIGHT
       const height = event.minutes / MIN_MINUTES * MIN_HEIGHT
-      const color = targetEvent ? event.color : this.convRgba(event.color)
+      const color = target ? this.convRgba('#ffffff') : this.convRgba(event.color)
       return `background:${color};border-color:${event.color};top:${top}px;height:${height}px;`
     },
     convRgba(color, alpha = 0.5) {
@@ -141,14 +139,12 @@ export default {
     },
     addEvent() {
       const obj = {
+        uuid: uuid(),
         datetime: this.targetEvent.datetime,
         minutes: this.targetEvent.minutes,
-        recordId: this.targetEvent.recordId,
-        title: this.targetEvent.title,
-        projectId: this.targetEvent.projectId,
-        projectName: this.targetEvent.projectName,
-        //color: this.targetEvent.color
-        color: '#52bb1b'
+        key: this.targetTask.key,
+        taskName: this.targetTask.taskName,
+        color: this.targetTask.color
       }
       this.events.push(obj)
     },
@@ -157,16 +153,12 @@ export default {
       this.targetEvent.datetime = null
       this.targetEvent.minutes = null
       this.targetEvent.startY = null
-      this.targetEvent.recordId = null
-      this.targetEvent.title = null
-      this.targetEvent.projectId = null
-      this.targetEvent.projectName = null
-      this.targetEvent.color = null
     },
     mouseup: function(e) {
       if (this.targetEvent.dragFlag) {
-        const minutes = e.pageY - this.targetEvent.startY + MIN_HEIGHT
-        this.targetEvent.minutes = Math.ceil(minutes / MIN_HEIGHT) * MIN_MINUTES
+        let height = e.pageY - this.targetEvent.startY + MIN_HEIGHT
+        height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
+        this.targetEvent.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
         this.addEvent()
         this.resetEvent()
       }
@@ -177,21 +169,20 @@ export default {
       }
     },
     mousedown: function(e) {
+      if (this.targetTask.key == null) {
+        this.$message({ type: 'warning', message: 'タスクが未選択です' })
+        return
+      }
       this.targetEvent.dragFlag = true
       this.targetEvent.datetime = moment(e.target.dataset.date, 'YYYY-MM-DD HH:mm:ss')
       this.targetEvent.minutes = MIN_MINUTES
       this.targetEvent.startY = e.pageY
-      this.targetEvent.recordId = moment().unix()
-      this.targetEvent.title = 'title'
-      this.targetEvent.projectId = 'projectId'
-      this.targetEvent.projectName = 'projectName'
-      this.targetEvent.color = '#999'
     },
     mousemove: function(e) {
       if (this.targetEvent.dragFlag) {
-        const minutes = e.pageY - this.targetEvent.startY + MIN_HEIGHT
-        if (minutes > 0) {
-          this.targetEvent.minutes = Math.ceil(minutes / MIN_HEIGHT) * MIN_MINUTES
+        const height = e.pageY - this.targetEvent.startY + MIN_HEIGHT
+        if (height > 0) {
+          this.targetEvent.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
         }
       }
     }

@@ -10,7 +10,8 @@
       :props="defaultProps"
       :filter-node-method="filterTask"
       node-key=".key"
-      ref="taskTree">
+      ref="taskTree"
+      @node-click="nodeClick">
       <div class="node-tree" slot-scope="{ node, data }">
         <div class="node-tree__label">{{ node.label }}</div>
         <el-button v-if="!isParent(node)" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
@@ -110,21 +111,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projects'])
+    ...mapGetters(['projects', 'targetEvent'])
   },
   methods: {
     isParent(node) {
       return node.parent.data.children != null
     },
     ...mapActions({
-      setLoading: 'SET_LOADING',
       getProjects: 'GET_PROJECTS',
       addProjects: 'ADD_PROJECTS',
       editProjects: 'EDIT_PROJECTS',
       removeProjects: 'REMOVE_PROJECTS',
       addTasks: 'ADD_TASKS',
       editTasks: 'EDIT_TASKS',
-      removeTasks: 'REMOVE_TASKS'
+      removeTasks: 'REMOVE_TASKS',
+      setTargetTask: 'SET_TARGET_TASK'
     }),
     filterTask(v, d) {
       if (!v) return true
@@ -234,6 +235,23 @@ export default {
       this.taskForm.name = ''
       this.taskForm.node = null
       this.taskForm.data = null
+    },
+    nodeClick(data) {
+      if (data.key == null) return
+      const obj = {
+        key: data.key,
+        taskName: data.name,
+        color: this.getColor(data.key)
+      }
+      this.setTargetTask({ targetTask: obj })
+    },
+    getColor(key) {
+      let color = ''
+      this.projects.some(v => {
+        color = v.color
+        if (v.children != null && v.children.findIndex(d => d.key === key) !== -1) return true
+      })
+      return color
     }
   }
 }
