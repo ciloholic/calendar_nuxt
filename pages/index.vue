@@ -19,9 +19,6 @@ export default {
 
 <style lang="scss" scoped>
 .el-container {
-  background: #3c3a33;
-  width: 100vw;
-  height: 100vh;
   padding: 0 15px 0 15px;
   display: grid;
   grid-template-columns: 240px 1fr;
