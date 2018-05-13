@@ -36,7 +36,7 @@
           class="eventBlock"
           :key="event.uuid"
           :style="setStyle(event)">
-          {{ event.taskName }}
+          {{ event.name }}
         </div>
         <!-- target event -->
         <div
@@ -67,7 +67,8 @@ export default {
     currentDay: moment(),
     timeList: [],
     days: [],
-    events: [],
+    projectMaster: [],
+    showEvents: [],
     targetEvent: {
       dragFlag: false,
       datetime: null,
@@ -75,6 +76,12 @@ export default {
       startY: null
     }
   }),
+  watch: {
+    events: function() {
+      this.createProjectMaster()
+      this.convEvents()
+    }
+  },
   created() {
     // 各曜日のmoment一覧を生成
     this.setCalendar(moment())
@@ -85,9 +92,10 @@ export default {
         this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
       })
     })
+    this.getEvents()
   },
   computed: {
-    ...mapGetters(['targetTask']),
+    ...mapGetters(['projects', 'events', 'targetTask']),
     labelWeekText: function() {
       const min = Math.min.apply(null, this.weekList)
       const max = Math.max.apply(null, this.weekList)
@@ -96,6 +104,8 @@ export default {
   },
   methods: {
     ...mapActions({
+      getEvents: 'GET_EVENTS',
+      addEvents: 'ADD_EVENTS',
       setTargetTask: 'SET_TARGET_TASK'
     }),
     setCalendar(dayMoment) {
@@ -120,7 +130,7 @@ export default {
       return `rgba(${Object.values(rgba).join(',')})`
     },
     dayEvent(dayMoment) {
-      return this.events.filter(event => event.datetime.isSame(dayMoment, 'day'))
+      return this.showEvents.filter(event => event.datetime.isSame(dayMoment, 'day'))
     },
     isToday(dayMoment) {
       return moment().isSame(dayMoment, 'day')
@@ -131,22 +141,37 @@ export default {
     formatTime(date, format) {
       return moment(date).format(format)
     },
+    createProjectMaster() {
+      let list = []
+      this.projects.forEach(v => {
+        if (v.children != null) {
+          v.children.forEach(vv => {
+            list[vv.key] = {
+              name: vv.name,
+              color: v.color
+            }
+          })
+        }
+      })
+      this.projectMaster = list
+    },
+    convEvents() {
+      this.showEvents = this.events.map(v => {
+        return {
+          uuid: v.uuid,
+          key: v.key,
+          datetime: moment(v.datetime),
+          minutes: v.minutes,
+          name: this.projectMaster[v.key]['name'],
+          color: this.projectMaster[v.key]['color']
+        }
+      })
+    },
     onPrevClick() {
       this.setCalendar(this.currentDay.subtract(1, 'weeks'))
     },
     onNextClick() {
       this.setCalendar(this.currentDay.add(1, 'weeks'))
-    },
-    addEvent() {
-      const obj = {
-        uuid: uuid(),
-        datetime: this.targetEvent.datetime,
-        minutes: this.targetEvent.minutes,
-        key: this.targetTask.key,
-        taskName: this.targetTask.taskName,
-        color: this.targetTask.color
-      }
-      this.events.push(obj)
     },
     resetEvent() {
       this.targetEvent.dragFlag = false
@@ -159,7 +184,14 @@ export default {
         let height = e.pageY - this.targetEvent.startY + MIN_HEIGHT
         height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
         this.targetEvent.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-        this.addEvent()
+        const obj = {
+          uuid: uuid(),
+          datetime: this.formatTime(this.targetEvent.datetime, 'YYYY-MM-DD HH:mm:ss'),
+          minutes: this.targetEvent.minutes,
+          key: this.targetTask.key,
+          delete: false
+        }
+        this.addEvents(obj)
         this.resetEvent()
       }
     },

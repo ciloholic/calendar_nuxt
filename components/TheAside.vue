@@ -6,7 +6,7 @@
     <el-button type="primary" size="mini" class="project-add-button" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
     <!-- project node tree -->
     <el-tree
-      :data="projects"
+      :data="showProjects"
       :props="defaultProps"
       :filter-node-method="filterTask"
       node-key=".key"
@@ -111,7 +111,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projects', 'targetEvent'])
+    ...mapGetters(['projects', 'targetEvent']),
+    showProjects: function() {
+      return this.projects.map(v => {
+        let project = Object.assign({}, v)
+        if (v.children != null) {
+          project.children = v.children.filter(vv => !vv.delete)
+        }
+        return project
+      })
+    }
   },
   methods: {
     isParent(node) {
@@ -125,6 +134,7 @@ export default {
       addTasks: 'ADD_TASKS',
       editTasks: 'EDIT_TASKS',
       removeTasks: 'REMOVE_TASKS',
+      getEvents: 'GET_EVENTS',
       setTargetTask: 'SET_TARGET_TASK'
     }),
     filterTask(v, d) {
@@ -144,6 +154,7 @@ export default {
       const obj = { '.key': this.projectForm.data['.key'], name: this.projectForm.name, color: this.projectForm.color }
       this.editProjects(obj)
       this.resetProjectForm()
+      this.getEvents()
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
@@ -161,6 +172,7 @@ export default {
       })
         .then(() => {
           this.removeProjects(this.projectForm.data['.key'])
+          this.getEvents()
           this.projectEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -201,6 +213,7 @@ export default {
       const obj = { '.key': parent.data['.key'], name: this.taskForm.name, index: index }
       this.editTasks(obj)
       this.resetTaskForm()
+      this.getEvents()
       this.taskEditDialog = false
     },
     editTaskButton(node, data) {
@@ -219,8 +232,9 @@ export default {
           const parent = this.taskForm.node.parent
           const children = parent.data.children
           const index = children.findIndex(d => d.key === this.taskForm.data.key)
-          const obj = { '.key': parent.data['.key'], index: index }
+          const obj = { '.key': parent.data['.key'], index: index, delete: true }
           this.removeTasks(obj)
+          this.getEvents()
           this.taskEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })

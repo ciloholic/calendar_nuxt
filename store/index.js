@@ -5,6 +5,7 @@ import firebase from '~/plugins/firebase'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 const db = firebase.database()
 const projectsRef = db.ref('/projects')
+const eventsRef = db.ref('/events')
 
 Vue.use(Vuex)
 
@@ -13,6 +14,7 @@ const store = () => {
     state: {
       loading: false,
       projects: [],
+      events: [],
       targetTask: {
         key: null,
         taskName: null,
@@ -22,6 +24,7 @@ const store = () => {
     getters: {
       loading: state => state.loading,
       projects: state => state.projects,
+      events: state => state.events,
       targetTask: state => state.targetTask
     },
     mutations: {
@@ -51,11 +54,11 @@ const store = () => {
       }),
       ADD_TASKS: firebaseAction((context, obj) => {
         const children = projectsRef.child(`${obj['.key']}/children`)
-        var tasks = []
+        let tasks = []
         children.on('value', snap => {
           tasks = snap.val()
         })
-        const newTask = { key: uuid(), name: obj.name }
+        const newTask = { key: uuid(), name: obj.name, delete: false }
         if (tasks != null) {
           tasks.push(newTask)
           children.set(tasks)
@@ -67,17 +70,13 @@ const store = () => {
         projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ name: obj.name })
       }),
       REMOVE_TASKS: firebaseAction((context, obj) => {
-        projectsRef.child(`${obj['.key']}/children/${obj['index']}`).remove()
-        const children = projectsRef.child(`${obj['.key']}/children`)
-        var tasks = []
-        children.on('value', snap => {
-          tasks = snap.val()
-        })
-        if (tasks != null) {
-          children.set(tasks.filter(v => v))
-        } else {
-          children.remove()
-        }
+        projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ delete: obj.delete })
+      }),
+      GET_EVENTS: firebaseAction(({ bindFirebaseRef }) => {
+        bindFirebaseRef('events', eventsRef)
+      }),
+      ADD_EVENTS: firebaseAction((context, obj) => {
+        eventsRef.push(obj)
       }),
       SET_TARGET_TASK({ commit }, { targetTask }) {
         commit('setTargetTask', { targetTask })
