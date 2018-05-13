@@ -50,7 +50,7 @@ const store = () => {
         projectsRef.child(obj['.key']).update({ name: obj.name, color: obj.color })
       }),
       REMOVE_PROJECTS: firebaseAction((context, key) => {
-        projectsRef.child(key).remove()
+        projectsRef.child(key).update({ delete: true })
       }),
       ADD_TASKS: firebaseAction((context, obj) => {
         const children = projectsRef.child(`${obj['.key']}/children`)

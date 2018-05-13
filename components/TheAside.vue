@@ -113,7 +113,8 @@ export default {
   computed: {
     ...mapGetters(['projects', 'targetEvent']),
     showProjects: function() {
-      return this.projects.map(v => {
+      const projects = this.projects.filter(v => !v.delete)
+      return projects.map(v => {
         let project = Object.assign({}, v)
         if (v.children != null) {
           project.children = v.children.filter(vv => !vv.delete)
@@ -144,7 +145,8 @@ export default {
     addProject() {
       const obj = {
         name: this.projectForm.name,
-        color: this.projectForm.color
+        color: this.projectForm.color,
+        delete: false
       }
       this.addProjects(obj)
       this.resetProjectForm()
