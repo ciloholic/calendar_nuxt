@@ -18,7 +18,7 @@ const store = () => {
       projects: [],
       events: [],
       targetTask: {
-        key: null,
+        id: null,
         taskName: null,
         color: null
       }
@@ -88,7 +88,7 @@ const store = () => {
         children.on('value', snap => {
           tasks = snap.val()
         })
-        const newTask = { key: uuid(), name: obj.name, delete: false }
+        const newTask = { id: uuid(), name: obj.name, delete: false }
         if (tasks != null) {
           tasks.push(newTask)
           children.set(tasks)
@@ -107,6 +107,9 @@ const store = () => {
       }),
       ADD_EVENTS: firebaseAction((context, obj) => {
         eventsRef.push(obj)
+      }),
+      EDIT_EVENTS: firebaseAction((context, obj) => {
+        eventsRef.child(`${obj['.key']}`).update({ datetime: obj.datetime })
       }),
       SET_TARGET_TASK({ commit }, { targetTask }) {
         commit('setTargetTask', { targetTask })

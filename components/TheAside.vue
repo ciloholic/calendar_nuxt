@@ -214,7 +214,7 @@ export default {
     editTask() {
       const parent = this.taskForm.node.parent
       const children = parent.data.children
-      const index = children.findIndex(d => d.key === this.taskForm.data.key)
+      const index = children.findIndex(d => d.id === this.taskForm.data.id)
       const obj = { '.key': parent.data['.key'], name: this.taskForm.name, index: index }
       this.editTasks(obj)
       this.resetTaskForm()
@@ -236,7 +236,7 @@ export default {
         .then(() => {
           const parent = this.taskForm.node.parent
           const children = parent.data.children
-          const index = children.findIndex(d => d.key === this.taskForm.data.key)
+          const index = children.findIndex(d => d.id === this.taskForm.data.id)
           const obj = { '.key': parent.data['.key'], index: index, delete: true }
           this.removeTasks(obj)
           this.getEvents()
@@ -256,19 +256,19 @@ export default {
       this.taskForm.data = null
     },
     nodeClick(data) {
-      if (data.key == null) return
+      if (data.id == null) return
       const obj = {
-        key: data.key,
+        id: data.id,
         taskName: data.name,
-        color: this.getColor(data.key)
+        color: this.getColor(data.id)
       }
       this.setTargetTask({ targetTask: obj })
     },
-    getColor(key) {
+    getColor(id) {
       let color = ''
       this.projects.some(v => {
         color = v.color
-        if (v.children != null && v.children.findIndex(d => d.key === key) !== -1) return true
+        if (v.children != null && v.children.findIndex(d => d.id === id) !== -1) return true
       })
       return color
     }
