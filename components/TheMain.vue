@@ -20,10 +20,10 @@
     <div v-for="w in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
       <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul
-        @mouseup="mouseup"
-        @mouseleave="mouseleave"
-        @mousedown="mousedown"
-        @mousemove="mousemove">
+        @mouseup="createMouseup"
+        @mouseleave="createMouseleave"
+        @mousedown="createMousedown"
+        @mousemove="createMousemove">
         <li
           v-for="t in timeList"
           :key="t.id"
@@ -35,7 +35,11 @@
           v-for="event in dayEvent(days[w])"
           class="eventBlock"
           :key="event.uuid"
-          :style="setStyle(event)">
+          :style="setStyle(event)"
+          @mouseup.stop="moveMouseup"
+          @mouseleave.stop="moveMouseleave"
+          @mousedown.stop="moveMousedown"
+          @mousemove.stop="moveMousemove">
           {{ event.name }}
         </div>
         <!-- target event -->
@@ -179,7 +183,7 @@ export default {
       this.targetEvent.minutes = null
       this.targetEvent.startY = null
     },
-    mouseup: function(e) {
+    createMouseup: function(e) {
       if (this.targetEvent.dragFlag) {
         let height = e.pageY - this.targetEvent.startY + MIN_HEIGHT
         height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
@@ -195,12 +199,12 @@ export default {
         this.resetEvent()
       }
     },
-    mouseleave: function() {
+    createMouseleave: function() {
       if (this.targetEvent.dragFlag) {
         this.resetEvent()
       }
     },
-    mousedown: function(e) {
+    createMousedown: function(e) {
       if (this.targetTask.key == null) {
         this.$message({ type: 'warning', message: 'タスクが未選択です' })
         return
@@ -210,13 +214,28 @@ export default {
       this.targetEvent.minutes = MIN_MINUTES
       this.targetEvent.startY = e.pageY
     },
-    mousemove: function(e) {
+    createMousemove: function(e) {
       if (this.targetEvent.dragFlag) {
         const height = e.pageY - this.targetEvent.startY + MIN_HEIGHT
         if (height > 0) {
           this.targetEvent.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
         }
       }
+    },
+    moveMouseup: function(e) {
+      console.log('moveMouseup')
+      console.log(e.pageY)
+    },
+    moveMouseleave: function() {
+      console.log('moveMouseleave')
+    },
+    moveMousedown: function(e) {
+      console.log('moveMousedown')
+      console.log(e.pageY)
+    },
+    moveMousemove: function(e) {
+      console.log('moveMousemove')
+      console.log(e.pageY)
     }
   }
 }

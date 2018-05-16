@@ -6,12 +6,14 @@ import { firebaseMutations, firebaseAction } from 'vuexfire'
 const db = firebase.database()
 const projectsRef = db.ref('/projects')
 const eventsRef = db.ref('/events')
+const provider = new firebase.auth.GoogleAuthProvider()
 
 Vue.use(Vuex)
 
 const store = () => {
   return new Vuex.Store({
     state: {
+      user: null,
       loading: false,
       projects: [],
       events: [],
@@ -22,12 +24,17 @@ const store = () => {
       }
     },
     getters: {
+      user: state => state.user,
+      isLogin: state => !!state.user,
       loading: state => state.loading,
       projects: state => state.projects,
       events: state => state.events,
       targetTask: state => state.targetTask
     },
     mutations: {
+      setUser(state, { user }) {
+        state.user = user || null
+      },
       setLoading(state, { loading }) {
         state.loading = loading
       },
@@ -37,6 +44,29 @@ const store = () => {
       }
     },
     actions: {
+      LOGIN() {
+        return new Promise((resolve, reject) => {
+          firebase
+            .auth()
+            .signInWithRedirect(provider)
+            .then(() => resolve())
+            .catch(err => reject(err))
+        })
+      },
+      LOGOUT({ commit }) {
+        return new Promise((resolve, reject) => {
+          firebase
+            .auth()
+            .signOut()
+            .then(() => {
+              commit('setUser', {})
+              resolve()
+            })
+        })
+      },
+      SET_USER({ commit }, { user }) {
+        commit('setUser', { user })
+      },
       SET_LOADING({ commit }, { loading }) {
         commit('setLoading', { loading })
       },

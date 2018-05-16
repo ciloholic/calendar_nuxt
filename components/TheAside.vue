@@ -1,5 +1,7 @@
 <template>
   <el-aside width="100vw">
+    <!-- logout button -->
+    <el-button type="danger" size="mini" class="project-add-button" @click="logout()">ログアウト</el-button>
     <!-- search -->
     <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
     <!-- project add button -->
@@ -128,6 +130,7 @@ export default {
       return node.parent.data.children != null
     },
     ...mapActions({
+      logout: 'LOGOUT',
       getProjects: 'GET_PROJECTS',
       addProjects: 'ADD_PROJECTS',
       editProjects: 'EDIT_PROJECTS',

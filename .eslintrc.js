@@ -19,6 +19,8 @@ module.exports = {
     'semi': [2, 'never'],
     'no-console': 'off',
     'vue/max-attributes-per-line': 'off',
+    'no-undef': 'off',
+    'no-unused-vars': 'off',
     'prettier/prettier': [
       'error', {
         'semi': false,

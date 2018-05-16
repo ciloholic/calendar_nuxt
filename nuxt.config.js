@@ -17,6 +17,7 @@ module.exports = {
     'element-ui/lib/theme-chalk/index.css',
     { src: '~/assets/app.scss', lang: 'scss' }
   ],
+  router: { middleware: 'auth' },
   plugins: ['~/plugins/element-ui.js'],
   modules: ['@nuxtjs/dotenv', '@nuxtjs/axios'],
   axios: {},
