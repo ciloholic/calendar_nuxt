@@ -4,7 +4,8 @@ module.exports = {
   mode: 'spa',
   loading: '~/components/TheLoading.vue',
   head: {
-    title: 'ReCalendar',
+    title: 'Top',
+    titleTemplate: 'ReCalendar | %s',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

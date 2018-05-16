@@ -65,6 +65,9 @@ const MIN_HEIGHT = 12
 const MIN_MINUTES = 15
 
 export default {
+  head: {
+    title: 'Main'
+  },
   data: () => ({
     weekList: Array.from(new Array(7)).map((_, i) => i),
     dayList: Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2)),

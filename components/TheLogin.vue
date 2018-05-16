@@ -11,6 +11,9 @@ import auth from '~/plugins/auth'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  head: {
+    title: 'Login'
+  },
   async mounted() {
     if (process.browser) {
       this.setLoading({ loading: true })
