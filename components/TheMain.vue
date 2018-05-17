@@ -192,25 +192,23 @@ export default {
       this.dragTarget.startY = null
     },
     createMouseup: function(e) {
-      if (this.dragTarget.dragFlag) {
-        let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
-        height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
-        this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-        const obj = {
-          uid: this.user.uid,
-          id: this.targetTask.id,
-          datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
-          minutes: this.dragTarget.minutes,
-          delete: false
-        }
-        this.addEvents(obj)
-        this.resetDragTarget()
+      if (!this.dragTarget.dragFlag) return
+      let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
+      height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
+      this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+      const obj = {
+        uid: this.user.uid,
+        id: this.targetTask.id,
+        datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
+        minutes: this.dragTarget.minutes,
+        delete: false
       }
+      this.addEvents(obj)
+      this.resetDragTarget()
     },
     createMouseleave: function() {
-      if (this.dragTarget.dragFlag) {
-        this.resetDragTarget()
-      }
+      if (!this.dragTarget.dragFlag) return
+      this.resetDragTarget()
     },
     createMousedown: function(e) {
       if (this.targetTask.id == null) {
@@ -223,53 +221,51 @@ export default {
       this.dragTarget.startY = e.pageY
     },
     createMousemove: function(e) {
-      if (this.dragTarget.dragFlag) {
-        const height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
-        if (height > 0) {
-          this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-        }
+      if (!this.dragTarget.dragFlag) return
+      const height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
+      if (height > 0) {
+        this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
       }
     },
     moveMouseup: function(e) {
-      if (this.moveTarget.moveFlag) {
-        if (this.moveTarget.endDatetime != null) {
-          const obj = {
-            '.key': this.moveTarget.key,
-            datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
-          }
-          this.editEvents(obj)
+      if (!this.moveTarget.moveFlag) return
+      if (this.moveTarget.endDatetime != null) {
+        const obj = {
+          '.key': this.moveTarget.key,
+          datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
         }
-        this.resetMoveTarget()
+        this.editEvents(obj)
       }
+      this.resetMoveTarget()
     },
     moveMouseleave: function() {
-      if (this.moveTarget.moveFlag) {
-        this.resetMoveTarget()
-      }
+      if (!this.moveTarget.moveFlag) return
+      this.resetMoveTarget()
     },
     moveMousedown: function(e) {
+      if (this.moveTarget.moveFlag) return
       this.moveTarget.moveFlag = true
       this.moveTarget.key = e.target.dataset.key
       this.moveTarget.startDatetime = moment(e.target.dataset.datetime, 'YYYY-MM-DD HH:mm:ss')
       this.moveTarget.startY = e.pageY
     },
     moveMousemove: function(e) {
-      if (this.moveTarget.moveFlag) {
-        const height = e.pageY - this.moveTarget.startY
-        const minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-        let datetime
-        if (minutes > 0) {
-          datetime = this.moveTarget.startDatetime.clone().add(minutes, 'minutes')
-        } else {
-          datetime = this.moveTarget.startDatetime.clone().subtract(Math.abs(minutes), 'minutes')
-        }
-        this.showEvents.forEach(v => {
-          if (v['.key'] === this.moveTarget.key) {
-            v.datetime = datetime
-          }
-        })
-        this.moveTarget.endDatetime = datetime
+      if (!this.moveTarget.moveFlag) return
+      const height = e.pageY - this.moveTarget.startY
+      if (height == 0) return
+      const minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+      let datetime
+      if (minutes > 0) {
+        datetime = this.moveTarget.startDatetime.clone().add(minutes, 'minutes')
+      } else {
+        datetime = this.moveTarget.startDatetime.clone().subtract(Math.abs(minutes), 'minutes')
       }
+      this.showEvents.forEach(v => {
+        if (v['.key'] === this.moveTarget.key) {
+          v.datetime = datetime
+        }
+      })
+      this.moveTarget.endDatetime = datetime
     },
     resetMoveTarget() {
       this.moveTarget.moveFlag = false
