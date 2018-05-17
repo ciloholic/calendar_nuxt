@@ -107,10 +107,10 @@ export default {
         this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
       })
     })
-    this.getEvents()
+    this.getEvents(this.user)
   },
   computed: {
-    ...mapGetters(['projects', 'events', 'targetTask']),
+    ...mapGetters(['user', 'projects', 'events', 'targetTask']),
     labelWeekText: function() {
       const min = Math.min.apply(null, this.weekList)
       const max = Math.max.apply(null, this.weekList)
@@ -162,10 +162,7 @@ export default {
       this.projects.forEach(v => {
         if (v.children != null) {
           v.children.forEach(vv => {
-            list[vv.id] = {
-              name: vv.name,
-              color: v.color
-            }
+            list[vv.id] = { name: vv.name, color: v.color }
           })
         }
       })
@@ -200,6 +197,7 @@ export default {
         height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
         this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
         const obj = {
+          uid: this.user.uid,
           id: this.targetTask.id,
           datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
           minutes: this.dragTarget.minutes,

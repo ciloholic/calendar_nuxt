@@ -113,7 +113,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projects', 'targetEvent']),
+    ...mapGetters(['user', 'projects', 'targetEvent']),
     showProjects: function() {
       const projects = this.projects.filter(v => !v.delete)
       return projects.map(v => {
@@ -126,9 +126,6 @@ export default {
     }
   },
   methods: {
-    isParent(node) {
-      return node.parent.data.children != null
-    },
     ...mapActions({
       logout: 'LOGOUT',
       getProjects: 'GET_PROJECTS',
@@ -141,6 +138,9 @@ export default {
       getEvents: 'GET_EVENTS',
       setTargetTask: 'SET_TARGET_TASK'
     }),
+    isParent(node) {
+      return node.parent.data.children != null
+    },
     filterTask(v, d) {
       if (!v) return true
       return d.name.indexOf(v) !== -1
@@ -159,7 +159,7 @@ export default {
       const obj = { '.key': this.projectForm.data['.key'], name: this.projectForm.name, color: this.projectForm.color }
       this.editProjects(obj)
       this.resetProjectForm()
-      this.getEvents()
+      this.getEvents(this.user)
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
@@ -177,7 +177,7 @@ export default {
       })
         .then(() => {
           this.removeProjects(this.projectForm.data['.key'])
-          this.getEvents()
+          this.getEvents(this.user)
           this.projectEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -218,7 +218,7 @@ export default {
       const obj = { '.key': parent.data['.key'], name: this.taskForm.name, index: index }
       this.editTasks(obj)
       this.resetTaskForm()
-      this.getEvents()
+      this.getEvents(this.user)
       this.taskEditDialog = false
     },
     editTaskButton(node, data) {
@@ -239,7 +239,7 @@ export default {
           const index = children.findIndex(d => d.id === this.taskForm.data.id)
           const obj = { '.key': parent.data['.key'], index: index, delete: true }
           this.removeTasks(obj)
-          this.getEvents()
+          this.getEvents(this.user)
           this.taskEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })

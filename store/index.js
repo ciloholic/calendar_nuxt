@@ -102,8 +102,8 @@ const store = () => {
       REMOVE_TASKS: firebaseAction((context, obj) => {
         projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ delete: obj.delete })
       }),
-      GET_EVENTS: firebaseAction(({ bindFirebaseRef }) => {
-        bindFirebaseRef('events', eventsRef)
+      GET_EVENTS: firebaseAction(({ bindFirebaseRef }, { uid }) => {
+        bindFirebaseRef('events', eventsRef.orderByChild('uid').equalTo(uid))
       }),
       ADD_EVENTS: firebaseAction((context, obj) => {
         eventsRef.push(obj)
