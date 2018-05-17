@@ -234,11 +234,13 @@ export default {
     },
     moveMouseup: function(e) {
       if (this.moveTarget.moveFlag) {
-        const obj = {
-          '.key': this.moveTarget.key,
-          datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
+        if (this.moveTarget.endDatetime != null) {
+          const obj = {
+            '.key': this.moveTarget.key,
+            datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
+          }
+          this.editEvents(obj)
         }
-        this.editEvents(obj)
         this.resetMoveTarget()
       }
     },
