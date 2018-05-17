@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <a class="signin_btn" @click="doLogin">
+    <a v-if="!loading" class="signin_btn" @click="doLogin">
       <img src="~/static/btn_google_signin.png">
     </a>
   </el-main>
@@ -24,7 +24,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user'])
+    ...mapGetters(['user', 'loading'])
   },
   methods: {
     ...mapActions({ login: 'LOGIN', setUser: 'SET_USER', setLoading: 'SET_LOADING' }),

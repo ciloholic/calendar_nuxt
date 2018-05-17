@@ -109,7 +109,6 @@ const store = () => {
         eventsRef.push(obj)
       }),
       EDIT_EVENTS: firebaseAction((context, obj) => {
-        console.log(obj.datetime)
         eventsRef.child(`${obj['.key']}`).update({ datetime: obj.datetime })
       }),
       SET_TARGET_TASK({ commit }, { targetTask }) {
