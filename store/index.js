@@ -73,16 +73,16 @@ const store = () => {
       GET_PROJECTS: firebaseAction(({ bindFirebaseRef }) => {
         bindFirebaseRef('projects', projectsRef)
       }),
-      ADD_PROJECTS: firebaseAction((context, obj) => {
+      ADD_PROJECT: firebaseAction((context, obj) => {
         projectsRef.push(obj)
       }),
-      EDIT_PROJECTS: firebaseAction((context, obj) => {
+      EDIT_PROJECT: firebaseAction((context, obj) => {
         projectsRef.child(obj['.key']).update({ name: obj.name, color: obj.color })
       }),
-      REMOVE_PROJECTS: firebaseAction((context, key) => {
+      REMOVE_PROJECT: firebaseAction((context, key) => {
         projectsRef.child(key).update({ delete: true })
       }),
-      ADD_TASKS: firebaseAction((context, obj) => {
+      ADD_TASK: firebaseAction((context, obj) => {
         const children = projectsRef.child(`${obj['.key']}/children`)
         let tasks = []
         children.on('value', snap => {
@@ -96,19 +96,19 @@ const store = () => {
           children.set([newTask])
         }
       }),
-      EDIT_TASKS: firebaseAction((context, obj) => {
+      EDIT_TASK: firebaseAction((context, obj) => {
         projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ name: obj.name })
       }),
-      REMOVE_TASKS: firebaseAction((context, obj) => {
+      REMOVE_TASK: firebaseAction((context, obj) => {
         projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ delete: obj.delete })
       }),
       GET_EVENTS: firebaseAction(({ bindFirebaseRef }, { uid }) => {
         bindFirebaseRef('events', eventsRef.orderByChild('uid').equalTo(uid))
       }),
-      ADD_EVENTS: firebaseAction((context, obj) => {
+      ADD_EVENT: firebaseAction((context, obj) => {
         eventsRef.push(obj)
       }),
-      EDIT_EVENTS: firebaseAction((context, obj) => {
+      EDIT_EVENT: firebaseAction((context, obj) => {
         eventsRef.child(`${obj['.key']}`).update({ datetime: obj.datetime })
       }),
       SET_TARGET_TASK({ commit }, { targetTask }) {

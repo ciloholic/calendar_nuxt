@@ -105,7 +105,7 @@ export default {
     taskForm: { name: '', node: null, data: null }
   }),
   created() {
-    this.getProjects()
+    this.getProjectsAction()
   },
   watch: {
     filterKeyword(v) {
@@ -128,15 +128,15 @@ export default {
   methods: {
     ...mapActions({
       logout: 'LOGOUT',
-      getProjects: 'GET_PROJECTS',
-      addProjects: 'ADD_PROJECTS',
-      editProjects: 'EDIT_PROJECTS',
-      removeProjects: 'REMOVE_PROJECTS',
-      addTasks: 'ADD_TASKS',
-      editTasks: 'EDIT_TASKS',
-      removeTasks: 'REMOVE_TASKS',
-      getEvents: 'GET_EVENTS',
-      setTargetTask: 'SET_TARGET_TASK'
+      getProjectsAction: 'GET_PROJECTS',
+      addProjectAction: 'ADD_PROJECT',
+      editProjectAction: 'EDIT_PROJECT',
+      removeProjectAction: 'REMOVE_PROJECT',
+      addTaskAction: 'ADD_TASK',
+      editTaskAction: 'EDIT_TASK',
+      removeTaskAction: 'REMOVE_TASK',
+      getEventsAction: 'GET_EVENTS',
+      setTargetTaskAction: 'SET_TARGET_TASK'
     }),
     isParent(node) {
       return node.parent.data.children != null
@@ -151,15 +151,15 @@ export default {
         color: this.projectForm.color,
         delete: false
       }
-      this.addProjects(obj)
+      this.addProjectAction(obj)
       this.resetProjectForm()
       this.projectAddDialog = false
     },
     editProject() {
       const obj = { '.key': this.projectForm.data['.key'], name: this.projectForm.name, color: this.projectForm.color }
-      this.editProjects(obj)
+      this.editProjectAction(obj)
       this.resetProjectForm()
-      this.getEvents(this.user)
+      this.getEventsAction(this.user)
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
@@ -176,8 +176,8 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.removeProjects(this.projectForm.data['.key'])
-          this.getEvents(this.user)
+          this.removeProjectAction(this.projectForm.data['.key'])
+          this.getEventsAction(this.user)
           this.projectEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -201,7 +201,7 @@ export default {
     },
     addTask() {
       const obj = { '.key': this.taskForm.data['.key'], name: this.taskForm.name }
-      this.addTasks(obj)
+      this.addTaskAction(obj)
       this.resetTaskForm()
       this.taskAddDialog = false
     },
@@ -216,9 +216,9 @@ export default {
       const children = parent.data.children
       const index = children.findIndex(d => d.id === this.taskForm.data.id)
       const obj = { '.key': parent.data['.key'], name: this.taskForm.name, index: index }
-      this.editTasks(obj)
+      this.editTaskAction(obj)
       this.resetTaskForm()
-      this.getEvents(this.user)
+      this.getEventsAction(this.user)
       this.taskEditDialog = false
     },
     editTaskButton(node, data) {
@@ -238,8 +238,8 @@ export default {
           const children = parent.data.children
           const index = children.findIndex(d => d.id === this.taskForm.data.id)
           const obj = { '.key': parent.data['.key'], index: index, delete: true }
-          this.removeTasks(obj)
-          this.getEvents(this.user)
+          this.removeTaskAction(obj)
+          this.getEventsAction(this.user)
           this.taskEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -262,7 +262,7 @@ export default {
         taskName: data.name,
         color: this.getColor(data.id)
       }
-      this.setTargetTask({ targetTask: obj })
+      this.setTargetTaskAction({ targetTask: obj })
     },
     getColor(id) {
       let color = ''

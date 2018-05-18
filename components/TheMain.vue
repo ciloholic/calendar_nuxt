@@ -35,7 +35,7 @@
           v-for="event in dayEvent(days[w])"
           draggable="true"
           class="eventBlock"
-          :class="{moved: moveTarget.flag & event['.key'] === moveTarget.key }"
+          :class="{moved: moveTarget.flag && event['.key'] === moveTarget.key }"
           :key="event['.key']"
           :data-key="event['.key']"
           :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
@@ -109,7 +109,7 @@ export default {
         this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
       })
     })
-    this.getEvents(this.user)
+    this.getEventsAction(this.user)
   },
   computed: {
     ...mapGetters(['user', 'projects', 'events', 'targetTask']),
@@ -121,10 +121,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      getEvents: 'GET_EVENTS',
-      addEvents: 'ADD_EVENTS',
-      editEvents: 'EDIT_EVENTS',
-      setTargetTask: 'SET_TARGET_TASK'
+      getEventsAction: 'GET_EVENTS',
+      addEventAction: 'ADD_EVENT',
+      editEventAction: 'EDIT_EVENT',
+      setTargetTaskAction: 'SET_TARGET_TASK'
     }),
     setCalendar(dayMoment) {
       this.days = []
@@ -205,7 +205,7 @@ export default {
         minutes: this.dragTarget.minutes,
         delete: false
       }
-      this.addEvents(obj)
+      this.addEventAction(obj)
       this.resetDragTarget()
     },
     mouseleave: function() {
@@ -255,7 +255,7 @@ export default {
         '.key': this.moveTarget.key,
         datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
       }
-      this.editEvents(obj)
+      this.editEventAction(obj)
       this.resetMoveTarget()
     },
     resetMoveTarget() {
