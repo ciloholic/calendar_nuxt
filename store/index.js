@@ -109,7 +109,10 @@ const store = () => {
         eventsRef.push(obj)
       }),
       EDIT_EVENT: firebaseAction((context, obj) => {
-        eventsRef.child(`${obj['.key']}`).update({ datetime: obj.datetime })
+        eventsRef.child(obj['.key']).update({ datetime: obj.datetime })
+      }),
+      REMOVE_EVENT: firebaseAction((context, key) => {
+        eventsRef.child(key).remove()
       }),
       SET_TARGET_TASK({ commit }, { targetTask }) {
         commit('setTargetTask', { targetTask })

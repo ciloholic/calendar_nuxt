@@ -45,6 +45,8 @@
           @drag.stop="drag"
           @dragend.stop="dragend">
           {{ event.name }}
+          <div @click.stop="removeClick" class="remove"></div>
+          <div class="after"></div>
         </div>
         <!-- target event -->
         <div
@@ -124,6 +126,7 @@ export default {
       getEventsAction: 'GET_EVENTS',
       addEventAction: 'ADD_EVENT',
       editEventAction: 'EDIT_EVENT',
+      removeEvent: 'REMOVE_EVENT',
       setTargetTaskAction: 'SET_TARGET_TASK'
     }),
     setCalendar(dayMoment) {
@@ -264,6 +267,9 @@ export default {
       this.moveTarget.startDatetime = null
       this.moveTarget.endDatetime = null
       this.moveTarget.startY = null
+    },
+    removeClick(e) {
+      this.removeEvent(e.target.parentNode.dataset.key)
     }
   }
 }
@@ -383,6 +389,16 @@ export default {
 
     &.moved {
       opacity: 0.5;
+    }
+
+    .remove {
+      background: rgba(255, 255, 255, 0.15);
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 15px;
+      height: 15px;
+      cursor: default;
     }
   }
 }
