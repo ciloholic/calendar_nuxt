@@ -46,7 +46,7 @@
         </div>
         <!-- target event -->
         <div
-          v-if="dragTarget.dragFlag && isTargetDay(days[w])"
+          v-if="dragTarget.flag && isTargetDay(days[w])"
           class="eventBlock selected"
           :style="setStyle(dragTarget, true)">
         </div>
@@ -78,13 +78,13 @@ export default {
     projectMaster: [],
     showEvents: [],
     dragTarget: {
-      dragFlag: false,
+      flag: false,
       datetime: null,
       minutes: null,
       startY: null
     },
     moveTarget: {
-      moveFlag: false,
+      flag: false,
       key: null,
       startDatetime: null,
       endDatetime: null,
@@ -186,13 +186,13 @@ export default {
       this.setCalendar(this.currentDay.add(1, 'weeks'))
     },
     resetDragTarget() {
-      this.dragTarget.dragFlag = false
+      this.dragTarget.flag = false
       this.dragTarget.datetime = null
       this.dragTarget.minutes = null
       this.dragTarget.startY = null
     },
     createMouseup: function(e) {
-      if (!this.dragTarget.dragFlag) return
+      if (!this.dragTarget.flag) return
       let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
       height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
       this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
@@ -207,7 +207,7 @@ export default {
       this.resetDragTarget()
     },
     createMouseleave: function() {
-      if (!this.dragTarget.dragFlag) return
+      if (!this.dragTarget.flag) return
       this.resetDragTarget()
     },
     createMousedown: function(e) {
@@ -215,20 +215,20 @@ export default {
         this.$message({ type: 'warning', message: 'タスクが未選択です' })
         return
       }
-      this.dragTarget.dragFlag = true
+      this.dragTarget.flag = true
       this.dragTarget.datetime = moment(e.target.dataset.date, 'YYYY-MM-DD HH:mm:ss')
       this.dragTarget.minutes = MIN_MINUTES
       this.dragTarget.startY = e.pageY
     },
     createMousemove: function(e) {
-      if (!this.dragTarget.dragFlag) return
+      if (!this.dragTarget.flag) return
       const height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
       if (height > 0) {
         this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
       }
     },
     moveMouseup: function(e) {
-      if (!this.moveTarget.moveFlag) return
+      if (!this.moveTarget.flag) return
       if (this.moveTarget.endDatetime != null) {
         const obj = {
           '.key': this.moveTarget.key,
@@ -239,18 +239,18 @@ export default {
       this.resetMoveTarget()
     },
     moveMouseleave: function() {
-      if (!this.moveTarget.moveFlag) return
+      if (!this.moveTarget.flag) return
       this.resetMoveTarget()
     },
     moveMousedown: function(e) {
-      if (this.moveTarget.moveFlag) return
-      this.moveTarget.moveFlag = true
+      if (this.moveTarget.flag) return
+      this.moveTarget.flag = true
       this.moveTarget.key = e.target.dataset.key
       this.moveTarget.startDatetime = moment(e.target.dataset.datetime, 'YYYY-MM-DD HH:mm:ss')
       this.moveTarget.startY = e.pageY
     },
     moveMousemove: function(e) {
-      if (!this.moveTarget.moveFlag) return
+      if (!this.moveTarget.flag) return
       const height = e.pageY - this.moveTarget.startY
       if (height == 0) return
       const minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
@@ -268,7 +268,7 @@ export default {
       this.moveTarget.endDatetime = datetime
     },
     resetMoveTarget() {
-      this.moveTarget.moveFlag = false
+      this.moveTarget.flag = false
       this.moveTarget.key = null
       this.moveTarget.startDatetime = null
       this.moveTarget.endDatetime = null
