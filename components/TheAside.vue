@@ -15,7 +15,7 @@
       ref="taskTree"
       @node-click="nodeClick">
       <div class="node-tree" slot-scope="{ node, data }">
-        <div class="node-tree__label">{{ node.label }}</div>
+        <div class="label" :class="{child: isParent(node)}">{{ node.label }}</div>
         <el-button v-if="!isParent(node)" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-plus"></i>
         </el-button>
@@ -319,8 +319,17 @@ export default {
         color: #606266;
       }
 
-      &__label {
+      .label {
+        max-width: 15rem;
+        font-size: 0.8em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         user-select: none;
+
+        &.child {
+          font-size: 0.5em;
+        }
       }
 
       .add-button {
