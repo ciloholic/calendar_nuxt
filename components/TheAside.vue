@@ -336,6 +336,10 @@ export default {
   border-radius: 3px;
 }
 
+.el-tree-node__expand-icon.is-leaf {
+  padding: 6px 0;
+}
+
 .el-form-item {
   margin-bottom: 10px;
 }

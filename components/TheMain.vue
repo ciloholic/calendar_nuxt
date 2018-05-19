@@ -413,6 +413,7 @@ export default {
         left: 0;
         width: 10px;
         height: 10px;
+        font-size: 0.5em;
         cursor: default;
       }
     }
