@@ -20,9 +20,9 @@
     <div v-for="w in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
       <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul
+        @mousedown="mousedown"
         @mouseup="mouseup"
         @mouseleave="mouseleave"
-        @mousedown="mousedown"
         @mousemove="mousemove">
         <li
           v-for="t in timeList"
@@ -41,12 +41,14 @@
           :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
           :style="setStyle(event)"
           @mousedown.stop
+          @mouseup.stop="moveMouseup"
           @dragstart.stop="dragstart"
           @drag.stop="drag"
           @dragend.stop="dragend">
           {{ event.name }}
-          <div @click.stop="removeClick" class="remove"></div>
-          <div class="after"></div>
+          <div @click.stop="removeClick" class="remove">
+            <i class="el-icon-close"></i>
+          </div>
         </div>
         <!-- target event -->
         <div
@@ -196,25 +198,6 @@ export default {
       this.dragTarget.minutes = null
       this.dragTarget.startY = null
     },
-    mouseup: function(e) {
-      if (!this.dragTarget.flag) return
-      let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
-      height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
-      this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-      const obj = {
-        uid: this.user.uid,
-        id: this.targetTask.id,
-        datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
-        minutes: this.dragTarget.minutes,
-        delete: false
-      }
-      this.addEventAction(obj)
-      this.resetDragTarget()
-    },
-    mouseleave: function() {
-      if (!this.dragTarget.flag) return
-      this.resetDragTarget()
-    },
     mousedown: function(e) {
       if (this.targetTask.id == null) {
         this.$message({ type: 'warning', message: 'タスクが未選択です' })
@@ -224,6 +207,24 @@ export default {
       this.dragTarget.datetime = moment(e.target.dataset.date, 'YYYY-MM-DD HH:mm:ss')
       this.dragTarget.minutes = MIN_MINUTES
       this.dragTarget.startY = e.pageY
+    },
+    mouseup: function(e) {
+      if (!this.dragTarget.flag) return
+      let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
+      height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
+      this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+      const obj = {
+        uid: this.user.uid,
+        id: this.targetTask.id,
+        datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
+        minutes: this.dragTarget.minutes
+      }
+      this.addEventAction(obj)
+      this.resetDragTarget()
+    },
+    mouseleave: function() {
+      if (!this.dragTarget.flag) return
+      this.resetDragTarget()
     },
     mousemove: function(e) {
       if (!this.dragTarget.flag) return
@@ -269,7 +270,15 @@ export default {
       this.moveTarget.startY = null
     },
     removeClick(e) {
-      this.removeEvent(e.target.parentNode.dataset.key)
+      this.removeEvent(e.target.parentNode.parentNode.dataset.key)
+    },
+    moveMouseup(e) {
+      const height = e.target.offsetHeight >= MIN_HEIGHT ? e.target.offsetHeight : MIN_HEIGHT
+      const obj = {
+        '.key': e.target.dataset.key,
+        minutes: Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+      }
+      this.editEventAction(obj)
     }
   }
 }
@@ -277,7 +286,7 @@ export default {
 
 <style lang="scss" scoped>
 .el-main {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   grid-area: main;
   display: flex;
   justify-content: space-between;
@@ -285,9 +294,9 @@ export default {
   height: calc(100vh - 40px);
   padding: 15px;
   user-select: none;
-  cursor: crosshair;
   position: relative;
   border-radius: 3px;
+  cursor: crosshair;
 }
 
 .week-label-group {
@@ -298,11 +307,6 @@ export default {
 
   .week-label {
     font-size: 15px;
-  }
-
-  .week-label a {
-    color: #dd8a61;
-    font-size: 13px;
   }
 }
 
@@ -328,7 +332,7 @@ export default {
   }
 
   &.today {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .day-label {
@@ -377,7 +381,6 @@ export default {
     width: 100%;
     position: absolute;
     min-height: 12px;
-    cursor: move;
     z-index: 10;
     transition: opacity 0.1s;
     display: flex;
@@ -386,19 +389,32 @@ export default {
     font-size: 12px;
     line-height: 1.2em;
     text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+    resize: vertical;
+    cursor: move;
 
     &.moved {
       opacity: 0.5;
     }
 
     .remove {
-      background: rgba(255, 255, 255, 0.15);
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 15px;
-      height: 15px;
-      cursor: default;
+      display: none;
+    }
+
+    &:hover {
+      overflow: hidden;
+
+      & > .remove {
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        cursor: default;
+      }
     }
   }
 }

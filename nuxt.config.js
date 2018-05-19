@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 module.exports = {
-  mode: 'spa',
+  mode: 'ssr',
   loading: '~/components/TheLoading.vue',
   head: {
     title: 'Top',

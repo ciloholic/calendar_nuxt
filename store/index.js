@@ -109,7 +109,9 @@ const store = () => {
         eventsRef.push(obj)
       }),
       EDIT_EVENT: firebaseAction((context, obj) => {
-        eventsRef.child(obj['.key']).update({ datetime: obj.datetime })
+        const key = obj['.key']
+        delete obj['.key']
+        eventsRef.child(key).update(obj)
       }),
       REMOVE_EVENT: firebaseAction((context, key) => {
         eventsRef.child(key).remove()
