@@ -1,7 +1,11 @@
 <template>
   <el-aside width="100vw">
-    <!-- logout button -->
-    <el-button type="danger" size="mini" class="project-add-button" @click="logout()">ログアウト</el-button>
+    <div class="button-group">
+      <!-- option button -->
+      <el-button type="info" size="mini" @click="optionDialog = true">オプション</el-button>
+      <!-- logout button -->
+      <el-button type="danger" size="mini" @click="logout()">ログアウト</el-button>
+    </div>
     <!-- search -->
     <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
     <!-- project add button -->
@@ -27,6 +31,14 @@
         </el-button>
       </div>
     </el-tree>
+    <!-- dialog - option -->
+    <el-dialog title="オプション" width="35%" :visible.sync="optionDialog">
+      <p>ダイアログ</p>
+      <span slot="footer">
+        <el-button @click="optionDialog = false">キャンセル</el-button>
+        <el-button type="primary">更新</el-button>
+      </span>
+    </el-dialog>
     <!-- dialog - add project -->
     <el-dialog title="プロジェクト追加" width="35%" :visible.sync="projectAddDialog">
       <el-form :model="projectForm">
@@ -97,6 +109,7 @@ export default {
   data: () => ({
     filterKeyword: '',
     defaultProps: { children: 'children', label: 'name' },
+    optionDialog: false,
     projectAddDialog: false,
     projectEditDialog: false,
     projectForm: { name: '', color: '', node: null, data: null },
@@ -295,6 +308,16 @@ export default {
 
     &__inner {
       border-radius: 3px;
+    }
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+
+    .el-button {
+      flex: auto;
     }
   }
 
