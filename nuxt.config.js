@@ -21,7 +21,6 @@ module.exports = {
   router: { middleware: 'auth' },
   plugins: ['~/plugins/element-ui.js'],
   modules: ['@nuxtjs/dotenv'],
-  axios: {},
   build: {
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {

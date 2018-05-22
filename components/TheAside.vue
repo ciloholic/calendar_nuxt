@@ -32,8 +32,30 @@
       </div>
     </el-tree>
     <!-- dialog - option -->
-    <el-dialog title="オプション" width="35%" :visible.sync="optionDialog">
-      <p>ダイアログ</p>
+    <el-dialog title="オプション" width="30%" :visible.sync="optionDialog">
+      <el-form :model="optionForm">
+        <el-form-item label="土日" label-width="30%">
+          <el-switch
+            v-model="optionForm.weekday"
+            active-text="表示"
+            inactive-text="非表示">
+          </el-switch>
+        </el-form-item>
+        <el-form-item label="開始時刻" label-width="30%">
+          <el-time-select
+            placeholder="Start time"
+            v-model="optionForm.startTime"
+            :picker-options="{ start: '00:00', step: '01:00', end: '10:00' }">
+          </el-time-select>
+        </el-form-item>
+        <el-form-item label="終了時刻" label-width="30%">
+          <el-time-select
+            placeholder="End time"
+            v-model="optionForm.endTime"
+            :picker-options="{ start: '18:00', step: '01:00', end: '23:45', minTime: optionForm.startTime}">
+          </el-time-select>
+        </el-form-item>
+      </el-form>
       <span slot="footer">
         <el-button @click="optionDialog = false">キャンセル</el-button>
         <el-button type="primary">更新</el-button>
@@ -110,6 +132,11 @@ export default {
     filterKeyword: '',
     defaultProps: { children: 'children', label: 'name' },
     optionDialog: false,
+    optionForm: {
+      weekday: false,
+      startTime: moment('09:00:00', 'HH:mm').format('HH:mm'),
+      endTime: moment('20:00:00', 'HH:mm').format('HH:mm')
+    },
     projectAddDialog: false,
     projectEditDialog: false,
     projectForm: { name: '', color: '', node: null, data: null },
@@ -118,6 +145,7 @@ export default {
     taskForm: { name: '', node: null, data: null }
   }),
   created() {
+    this.setOption()
     this.getProjectsAction()
   },
   watch: {
@@ -151,6 +179,20 @@ export default {
       getEventsAction: 'GET_EVENTS',
       setTargetTaskAction: 'SET_TARGET_TASK'
     }),
+    setOption() {
+      if (JSON.parse(localStorage.getItem('weekday')) == null) {
+        this.optionForm.weekday = true
+        localStorage.setItem('weekday', true)
+      }
+      if (localStorage.getItem('startTime') == null) {
+        this.optionForm.startTime = moment('09:00:00', 'HH:mm').format('HH:mm')
+        localStorage.setItem('startTime', this.optionForm.startTime)
+      }
+      if (localStorage.getItem('endTime') == null) {
+        this.optionForm.endTime = moment('20:00:00', 'HH:mm').format('HH:mm')
+        localStorage.setItem('endTime', this.optionForm.endTime)
+      }
+    },
     isParent(node) {
       return node.parent.data.children != null
     },

@@ -27,7 +27,7 @@ export default {
     ...mapGetters(['user', 'loading'])
   },
   methods: {
-    ...mapActions({ login: 'LOGIN', setUser: 'SET_USER', setLoading: 'SET_LOADING' }),
+    ...mapActions({ login: 'LOGIN', setLoading: 'SET_LOADING' }),
     doLogin() {
       this.login()
         .then(() => console.log('resloved'))
