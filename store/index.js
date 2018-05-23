@@ -3,6 +3,9 @@ import Vuex from 'vuex'
 import uuid from 'uuid/v1'
 import firebase from '~/plugins/firebase'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
+import moment from 'moment'
+moment.locale('ja')
+
 const db = firebase.database()
 const projectsRef = db.ref('/projects')
 const eventsRef = db.ref('/events')
@@ -21,7 +24,13 @@ const store = () => {
         id: null,
         taskName: null,
         color: null
-      }
+      },
+      optionForm: {
+        weekday: false,
+        startTime: moment('09:00:00', 'HH:mm').format('HH:mm'),
+        endTime: moment('20:00:00', 'HH:mm').format('HH:mm')
+      },
+      updateCalendar: false
     },
     getters: {
       user: state => state.user,
@@ -29,11 +38,13 @@ const store = () => {
       loading: state => state.loading,
       projects: state => state.projects,
       events: state => state.events,
-      targetTask: state => state.targetTask
+      targetTask: state => state.targetTask,
+      optionForm: state => state.optionForm,
+      isCalendar: state => !!state.updateCalendar
     },
     mutations: {
-      setUser(state, { user }) {
-        state.user = user || null
+      setUser(state, user) {
+        state.user = user
       },
       setLoading(state, { loading }) {
         state.loading = loading
@@ -41,6 +52,19 @@ const store = () => {
       ...firebaseMutations,
       setTargetTask(state, { targetTask }) {
         state.targetTask = targetTask
+      },
+      setOption(state) {
+        localStorage.setItem('weekday', state.optionForm.weekday)
+        localStorage.setItem('startTime', state.optionForm.startTime)
+        localStorage.setItem('endTime', state.optionForm.endTime)
+      },
+      getOption(state) {
+        if (JSON.parse(localStorage.getItem('weekday'))) state.optionForm.weekday = true
+        if (localStorage.getItem('startTime') != null) state.optionForm.startTime = localStorage.getItem('startTime')
+        if (localStorage.getItem('endTime') != null) state.optionForm.endTime = localStorage.getItem('endTime')
+      },
+      updateCalendar(state, updateCalendar) {
+        state.updateCalendar = updateCalendar
       }
     },
     actions: {
@@ -59,13 +83,13 @@ const store = () => {
             .auth()
             .signOut()
             .then(() => {
-              commit('setUser', {})
+              commit('setUser', null)
               resolve()
             })
         })
       },
-      SET_USER({ commit }, { user }) {
-        commit('setUser', { user })
+      SET_USER({ commit }, user) {
+        commit('setUser', user)
       },
       SET_LOADING({ commit }, { loading }) {
         commit('setLoading', { loading })
@@ -118,6 +142,15 @@ const store = () => {
       }),
       SET_TARGET_TASK({ commit }, { targetTask }) {
         commit('setTargetTask', { targetTask })
+      },
+      SET_OPTION({ commit }) {
+        commit('setOption')
+      },
+      GET_OPTION({ commit }) {
+        commit('getOption')
+      },
+      UPDATE_CALENDAR({ commit }, updateCalendar) {
+        commit('updateCalendar', updateCalendar)
       }
     }
   })

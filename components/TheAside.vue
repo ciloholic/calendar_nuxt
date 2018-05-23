@@ -45,20 +45,20 @@
           <el-time-select
             placeholder="Start time"
             v-model="optionForm.startTime"
-            :picker-options="{ start: '00:00', step: '01:00', end: '10:00' }">
+            :picker-options="{ start: '00:00', step: '01:00', end: '11:00' }">
           </el-time-select>
         </el-form-item>
         <el-form-item label="終了時刻" label-width="30%">
           <el-time-select
             placeholder="End time"
             v-model="optionForm.endTime"
-            :picker-options="{ start: '18:00', step: '01:00', end: '23:45', minTime: optionForm.startTime}">
+            :picker-options="{ start: '18:00', step: '01:00', end: '24:00', minTime: optionForm.startTime}">
           </el-time-select>
         </el-form-item>
       </el-form>
       <span slot="footer">
         <el-button @click="optionDialog = false">キャンセル</el-button>
-        <el-button type="primary">更新</el-button>
+        <el-button type="primary" @click="onOptionClick">更新</el-button>
       </span>
     </el-dialog>
     <!-- dialog - add project -->
@@ -124,19 +124,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import moment from 'moment'
-moment.locale('ja')
 
 export default {
   data: () => ({
     filterKeyword: '',
     defaultProps: { children: 'children', label: 'name' },
     optionDialog: false,
-    optionForm: {
-      weekday: false,
-      startTime: moment('09:00:00', 'HH:mm').format('HH:mm'),
-      endTime: moment('20:00:00', 'HH:mm').format('HH:mm')
-    },
     projectAddDialog: false,
     projectEditDialog: false,
     projectForm: { name: '', color: '', node: null, data: null },
@@ -145,7 +138,7 @@ export default {
     taskForm: { name: '', node: null, data: null }
   }),
   created() {
-    this.setOption()
+    this.getOptionAction()
     this.getProjectsAction()
   },
   watch: {
@@ -154,7 +147,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user', 'projects', 'targetEvent']),
+    ...mapGetters(['user', 'projects', 'targetEvent', 'optionForm']),
     showProjects: function() {
       const projects = this.projects.filter(v => !v.delete)
       return projects.map(v => {
@@ -177,22 +170,11 @@ export default {
       editTaskAction: 'EDIT_TASK',
       removeTaskAction: 'REMOVE_TASK',
       getEventsAction: 'GET_EVENTS',
-      setTargetTaskAction: 'SET_TARGET_TASK'
+      setTargetTaskAction: 'SET_TARGET_TASK',
+      setOptionAction: 'SET_OPTION',
+      getOptionAction: 'GET_OPTION',
+      updateCalendarAction: 'UPDATE_CALENDAR'
     }),
-    setOption() {
-      if (JSON.parse(localStorage.getItem('weekday')) == null) {
-        this.optionForm.weekday = true
-        localStorage.setItem('weekday', true)
-      }
-      if (localStorage.getItem('startTime') == null) {
-        this.optionForm.startTime = moment('09:00:00', 'HH:mm').format('HH:mm')
-        localStorage.setItem('startTime', this.optionForm.startTime)
-      }
-      if (localStorage.getItem('endTime') == null) {
-        this.optionForm.endTime = moment('20:00:00', 'HH:mm').format('HH:mm')
-        localStorage.setItem('endTime', this.optionForm.endTime)
-      }
-    },
     isParent(node) {
       return node.parent.data.children != null
     },
@@ -309,6 +291,11 @@ export default {
       this.taskForm.name = ''
       this.taskForm.node = null
       this.taskForm.data = null
+    },
+    onOptionClick() {
+      this.setOptionAction()
+      this.updateCalendarAction(true)
+      this.optionDialog = false
     },
     nodeClick(data) {
       if (data.id == null) return

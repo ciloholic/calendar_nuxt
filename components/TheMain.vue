@@ -17,7 +17,7 @@
       </ul>
     </div>
     <!-- main calendar -->
-    <div v-for="w in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
+    <div v-for="(_, w) in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
       <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul
         @mousedown="mousedown"
@@ -76,8 +76,8 @@ export default {
     title: 'Main'
   },
   data: () => ({
-    weekList: Array.from(new Array(7)).map((_, i) => i),
-    dayList: Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2)),
+    weekList: [],
+    dayList: [],
     currentDay: moment(),
     timeList: [],
     days: [],
@@ -98,6 +98,11 @@ export default {
     }
   }),
   watch: {
+    isCalendar: function(v) {
+      if (!v) return
+      this.setCalendar(moment())
+      this.updateCalendarAction(false)
+    },
     events: function() {
       this.createProjectMaster()
       this.convEvents()
@@ -116,7 +121,7 @@ export default {
     this.getEventsAction(this.user)
   },
   computed: {
-    ...mapGetters(['user', 'projects', 'events', 'targetTask']),
+    ...mapGetters(['user', 'projects', 'events', 'targetTask', 'optionForm', 'isCalendar']),
     labelWeekText: function() {
       const min = Math.min.apply(null, this.weekList)
       const max = Math.max.apply(null, this.weekList)
@@ -129,9 +134,13 @@ export default {
       addEventAction: 'ADD_EVENT',
       editEventAction: 'EDIT_EVENT',
       removeEvent: 'REMOVE_EVENT',
-      setTargetTaskAction: 'SET_TARGET_TASK'
+      setTargetTaskAction: 'SET_TARGET_TASK',
+      updateCalendarAction: 'UPDATE_CALENDAR'
     }),
     setCalendar(dayMoment) {
+      this.weekList = Array.from(new Array(7)).map((_, i) => i)
+      if (!this.optionForm.weekday) this.weekList = this.weekList.slice(1, 6)
+      this.dayList = Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2))
       this.days = []
       this.weekList.forEach(i => {
         this.days.push(dayMoment.clone().day(i))

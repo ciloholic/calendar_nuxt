@@ -19,7 +19,7 @@ export default {
       this.setLoading({ loading: true })
       let user
       if (!this.user) user = await auth()
-      this.user ? Promise.resolve() : this.$store.dispatch('SET_USER', { user: user })
+      this.user ? Promise.resolve() : this.$store.dispatch('SET_USER', user)
       this.setLoading({ loading: false })
     }
   },
