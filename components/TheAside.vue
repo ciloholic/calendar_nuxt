@@ -138,7 +138,9 @@ export default {
     taskForm: { name: '', node: null, data: null }
   }),
   created() {
+    // オプション取得
     this.getOptionAction()
+    // プロジェクト取得
     this.getProjectsAction()
   },
   watch: {

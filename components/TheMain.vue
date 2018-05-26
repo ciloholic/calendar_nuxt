@@ -109,7 +109,7 @@ export default {
     }
   },
   created() {
-    // 各曜日のmoment一覧を生成
+    // カレンダー初期設定
     this.setCalendar(moment())
     // 時刻一覧を生成
     const minutesList = Array.from(new Array(4)).map((_, i) => ('00' + i * MIN_MINUTES).slice(-2))
@@ -118,6 +118,7 @@ export default {
         this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
       })
     })
+    // イベント取得
     this.getEventsAction(this.user)
   },
   computed: {
