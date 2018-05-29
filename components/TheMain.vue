@@ -101,6 +101,7 @@ export default {
     isCalendar: function(v) {
       if (!v) return
       this.setCalendar(moment())
+      this.convEvents()
       this.updateCalendarAction(false)
     },
     events: function() {
@@ -109,16 +110,7 @@ export default {
     }
   },
   created() {
-    // カレンダー初期設定
     this.setCalendar(moment())
-    // 時刻一覧を生成
-    const minutesList = Array.from(new Array(4)).map((_, i) => ('00' + i * MIN_MINUTES).slice(-2))
-    Array.from(this.dayList).forEach(i => {
-      minutesList.forEach(j => {
-        this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
-      })
-    })
-    // イベント取得
     this.getEventsAction(this.user)
   },
   computed: {
@@ -139,17 +131,40 @@ export default {
       updateCalendarAction: 'UPDATE_CALENDAR'
     }),
     setCalendar(dayMoment) {
-      this.weekList = Array.from(new Array(7)).map((_, i) => i)
-      if (!this.optionForm.weekday) this.weekList = this.weekList.slice(1, 6)
-      this.dayList = Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2))
+      // 初期化
+      this.timeList = []
       this.days = []
+      // カレンダー初期設定
+      if (this.optionForm.weekday) {
+        this.weekList = Array.from(new Array(7)).map((_, i) => i)
+      } else {
+        this.weekList = Array.from(new Array(5)).map((_, i) => i + 1)
+      }
+      const dayList = Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2))
+      this.dayList = dayList.filter(v =>
+        moment(v, 'HH').isBetween(
+          moment(this.optionForm.startTime, 'HH:mm'),
+          moment(this.optionForm.endTime, 'HH:mm'),
+          null,
+          '[]'
+        )
+      )
       this.weekList.forEach(i => {
         this.days.push(dayMoment.clone().day(i))
       })
+      // 時刻一覧を生成
+      const minutesList = Array.from(new Array(4)).map((_, i) => ('00' + i * MIN_MINUTES).slice(-2))
+      Array.from(this.dayList).forEach(i => {
+        minutesList.forEach(j => {
+          this.timeList.push({ id: `${i}:${j}:00`, hh: i, mm: j })
+        })
+      })
     },
     setStyle(event, target = false) {
-      const top = event.datetime.hours() * 48 + event.datetime.minutes() / MIN_MINUTES * MIN_HEIGHT
-      const height = event.minutes / MIN_MINUTES * MIN_HEIGHT
+      const baseTop = moment(this.optionForm.startTime, 'HH:mm').hours() * (MIN_HEIGHT * 4)
+      const top =
+        event.datetime.hours() * (MIN_HEIGHT * 4) + (event.datetime.minutes() / MIN_MINUTES) * MIN_HEIGHT - baseTop
+      const height = (event.minutes / MIN_MINUTES) * MIN_HEIGHT
       const color = target ? this.convRgba('#ffffff') : this.convRgba(event.color)
       return `background:${color};border-color:${event.color};top:${top}px;height:${height}px;`
     },
@@ -163,7 +178,7 @@ export default {
       return `rgba(${Object.values(rgba).join(',')})`
     },
     dayEvent(dayMoment) {
-      return this.showEvents.filter(event => event.datetime.isSame(dayMoment, 'day'))
+      return this.showEvents.filter(v => v.datetime.isSame(dayMoment, 'day'))
     },
     isToday(dayMoment) {
       return moment().isSame(dayMoment, 'day')
@@ -186,7 +201,16 @@ export default {
       this.projectMaster = list
     },
     convEvents() {
-      this.showEvents = this.events.map(v => {
+      const events = this.events.filter(v => {
+        const target = moment(moment(v.datetime).format('HH:mm'), 'HH:mm')
+        return target.isBetween(
+          moment(this.optionForm.startTime, 'HH:mm'),
+          moment(this.optionForm.endTime, 'HH:mm'),
+          null,
+          '[]'
+        )
+      })
+      this.showEvents = events.map(v => {
         return {
           '.key': v['.key'],
           datetime: moment(v.datetime),

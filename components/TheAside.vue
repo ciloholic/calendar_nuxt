@@ -32,11 +32,12 @@
       </div>
     </el-tree>
     <!-- dialog - option -->
-    <el-dialog title="オプション" width="30%" :visible.sync="optionDialog">
+    <el-dialog custom-class="option" title="オプション" width="30%" :visible.sync="optionDialog" :before-close="beforeClose">
       <el-form :model="optionForm">
         <el-form-item label="土日" label-width="30%">
           <el-switch
             v-model="optionForm.weekday"
+            @change="updateOption"
             active-text="表示"
             inactive-text="非表示">
           </el-switch>
@@ -45,21 +46,21 @@
           <el-time-select
             placeholder="Start time"
             v-model="optionForm.startTime"
-            :picker-options="{ start: '00:00', step: '01:00', end: '11:00' }">
+            @change="updateOption"
+            :picker-options="{ start: '00:00', step: '01:00', end: '11:00' }"
+            :clearable="false">
           </el-time-select>
         </el-form-item>
         <el-form-item label="終了時刻" label-width="30%">
           <el-time-select
             placeholder="End time"
             v-model="optionForm.endTime"
-            :picker-options="{ start: '18:00', step: '01:00', end: '24:00', minTime: optionForm.startTime}">
+            @change="updateOption"
+            :picker-options="{ start: '18:00', step: '01:00', end: '23:00', minTime: optionForm.startTime}"
+            :clearable="false">
           </el-time-select>
         </el-form-item>
       </el-form>
-      <span slot="footer">
-        <el-button @click="optionDialog = false">キャンセル</el-button>
-        <el-button type="primary" @click="onOptionClick">更新</el-button>
-      </span>
     </el-dialog>
     <!-- dialog - add project -->
     <el-dialog title="プロジェクト追加" width="35%" :visible.sync="projectAddDialog">
@@ -294,10 +295,13 @@ export default {
       this.taskForm.node = null
       this.taskForm.data = null
     },
-    onOptionClick() {
+    beforeClose: function() {
+      this.optionDialog = false
+    },
+    updateOption() {
+      console.log('aaa')
       this.setOptionAction()
       this.updateCalendarAction(true)
-      this.optionDialog = false
     },
     nodeClick(data) {
       if (data.id == null) return
@@ -409,6 +413,10 @@ export default {
 
 .el-dialog__body {
   padding: 0 20px;
+}
+
+.el-dialog.option > .el-dialog__body {
+  padding: 0 20px 10px 20px;
 }
 
 .el-dialog__footer {
