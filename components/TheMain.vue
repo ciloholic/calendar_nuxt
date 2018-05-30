@@ -438,16 +438,16 @@ export default {
       overflow: hidden;
 
       & > .remove {
-        background: rgba(255, 255, 255, 0.1);
+        background: #3c3a33;
         display: flex;
         justify-content: center;
         align-items: center;
         position: absolute;
-        bottom: 0;
-        left: 0;
+        top: 0;
+        right: 0;
         width: 10px;
         height: 10px;
-        font-size: 0.5em;
+        font-size: 0.8em;
         cursor: default;
       }
     }

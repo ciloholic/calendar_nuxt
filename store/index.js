@@ -27,8 +27,8 @@ const store = () => {
       },
       optionForm: {
         weekday: false,
-        startTime: moment('09:00:00', 'HH:mm').format('HH:mm'),
-        endTime: moment('20:00:00', 'HH:mm').format('HH:mm')
+        startTime: moment('08:00:00', 'HH:mm').format('HH:mm'),
+        endTime: moment('21:00:00', 'HH:mm').format('HH:mm')
       },
       updateCalendar: false
     },

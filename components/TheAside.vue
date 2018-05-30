@@ -47,7 +47,7 @@
             placeholder="Start time"
             v-model="optionForm.startTime"
             @change="updateOption"
-            :picker-options="{ start: '00:00', step: '01:00', end: '11:00' }"
+            :picker-options="{ start: '00:00', step: '01:00', end: '08:00' }"
             :clearable="false">
           </el-time-select>
         </el-form-item>
@@ -56,7 +56,7 @@
             placeholder="End time"
             v-model="optionForm.endTime"
             @change="updateOption"
-            :picker-options="{ start: '18:00', step: '01:00', end: '23:00', minTime: optionForm.startTime}"
+            :picker-options="{ start: '21:00', step: '01:00', end: '23:00', minTime: optionForm.startTime}"
             :clearable="false">
           </el-time-select>
         </el-form-item>
@@ -369,7 +369,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: 0.9em;
       padding-right: 8px;
 
       i {
@@ -385,7 +385,7 @@ export default {
         user-select: none;
 
         &.child {
-          font-size: 0.5em;
+          font-size: 0.6em;
         }
       }
 
