@@ -116,9 +116,9 @@ export default {
   computed: {
     ...mapGetters(['user', 'projects', 'events', 'targetTask', 'optionForm', 'isCalendar']),
     labelWeekText: function() {
-      const min = Math.min.apply(null, this.weekList)
-      const max = Math.max.apply(null, this.weekList)
-      return `${this.formatTime(this.days[min], 'YYYY/MM/DD')} 〜 ${this.formatTime(this.days[max], 'MM/DD')}`
+      const start = this.formatTime(this.days[0], 'YYYY/MM/DD')
+      const end = this.formatTime(this.days[this.days.length - 1], 'MM/DD')
+      return `${start} 〜 ${end}`
     }
   },
   methods: {

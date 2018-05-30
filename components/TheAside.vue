@@ -299,7 +299,6 @@ export default {
       this.optionDialog = false
     },
     updateOption() {
-      console.log('aaa')
       this.setOptionAction()
       this.updateCalendarAction(true)
     },
