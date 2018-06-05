@@ -20,7 +20,7 @@
     <div v-for="(_, w) in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
       <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul
-        @mousedown="mousedown"
+        @mousedown="dragMousedown"
         @mouseup="mouseup"
         @mouseleave="mouseleave"
         @mousemove="mousemove">
@@ -33,19 +33,21 @@
         <!-- event list -->
         <div
           v-for="event in dayEvent(days[w])"
-          draggable="true"
           class="eventBlock"
           :class="{moved: moveTarget.flag && event['.key'] === moveTarget.key }"
           :key="event['.key']"
           :data-key="event['.key']"
           :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
           :style="setStyle(event)"
-          @mousedown.stop
-          @mouseup.stop="moveMouseup"
-          @dragstart.stop="dragstart"
-          @drag.stop="drag"
-          @dragend.stop="dragend">
+          @mousedown.stop="moveMousedown"
+          @mouseup.stop="mouseup"
+          @mousemove.stop="mousemove">
           {{ event.name }}
+          <div class="after"
+            @mousedown.stop="resizeMousedown"
+            @mouseup.stop="mouseup"
+            @mousemove.stop="mousemove">
+          </div>
           <div @click.stop="removeClick" class="remove">
             <i class="el-icon-close"></i>
           </div>
@@ -91,10 +93,14 @@ export default {
     },
     moveTarget: {
       flag: false,
+      mode: null,
       key: null,
       startDatetime: null,
       endDatetime: null,
-      startY: null
+      startY: null,
+      element: null,
+      top: null,
+      minutes: null
     }
   }),
   watch: {
@@ -226,13 +232,10 @@ export default {
     onNextClick() {
       this.setCalendar(this.currentDay.add(1, 'weeks'))
     },
-    resetDragTarget() {
-      this.dragTarget.flag = false
-      this.dragTarget.datetime = null
-      this.dragTarget.minutes = null
-      this.dragTarget.startY = null
+    removeClick(e) {
+      this.removeEvent(e.target.parentNode.parentNode.dataset.key)
     },
-    mousedown: function(e) {
+    dragMousedown: function(e) {
       if (this.targetTask.id == null) {
         this.$message({ type: 'warning', message: 'タスクが未選択です' })
         return
@@ -243,76 +246,104 @@ export default {
       this.dragTarget.startY = e.pageY
     },
     mouseup: function(e) {
-      if (!this.dragTarget.flag) return
-      let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
-      height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
-      this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-      const obj = {
-        uid: this.user.uid,
-        id: this.targetTask.id,
-        datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
-        minutes: this.dragTarget.minutes
+      if (this.dragTarget.flag) {
+        let height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
+        height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
+        this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+        const obj = {
+          uid: this.user.uid,
+          id: this.targetTask.id,
+          datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
+          minutes: this.dragTarget.minutes
+        }
+        this.addEventAction(obj)
       }
-      this.addEventAction(obj)
+      if (this.moveTarget.flag && this.moveTarget.key != null) {
+        let obj
+        if (this.moveTarget.mode === 'move' && this.moveTarget.endDatetime != null) {
+          obj = {
+            '.key': this.moveTarget.key,
+            datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
+          }
+        }
+        if (this.moveTarget.mode === 'resize' && this.moveTarget.minutes != null) {
+          obj = {
+            '.key': this.moveTarget.key,
+            minutes: this.moveTarget.minutes
+          }
+        }
+        if (obj != null) this.editEventAction(obj)
+      }
       this.resetDragTarget()
+      this.resetMoveTarget()
     },
     mouseleave: function() {
       if (!this.dragTarget.flag) return
       this.resetDragTarget()
     },
     mousemove: function(e) {
-      if (!this.dragTarget.flag) return
-      const height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
-      if (height > 0) {
-        this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+      if (this.dragTarget.flag) {
+        const height = e.pageY - this.dragTarget.startY + MIN_HEIGHT
+        if (height > 0) {
+          this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+        }
+      }
+      if (this.moveTarget.flag) {
+        const height = e.pageY - this.moveTarget.startY
+        if (e.pageY === 0 || Math.abs(height) < MIN_HEIGHT) return
+        const minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
+        if (this.moveTarget.mode === 'move') {
+          let datetime
+          if (minutes > 0) {
+            datetime = this.moveTarget.startDatetime.clone().add(minutes, 'minutes')
+          } else {
+            datetime = this.moveTarget.startDatetime.clone().subtract(Math.abs(minutes), 'minutes')
+          }
+          this.moveTarget.endDatetime = datetime
+          this.moveTarget.element.style.top = `${this.moveTarget.top + (minutes / MIN_MINUTES) * MIN_HEIGHT}px`
+        }
+        if (this.moveTarget.mode === 'resize') {
+          this.moveTarget.minutes = Math.abs(minutes)
+          this.moveTarget.element.style.height = `${(Math.abs(minutes) / MIN_MINUTES) * MIN_HEIGHT}px`
+        }
       }
     },
-    dragstart: function(e) {
+    moveMousedown: function(e) {
       if (this.moveTarget.flag) return
       this.moveTarget.flag = true
+      this.moveTarget.mode = 'move'
       this.moveTarget.key = e.target.dataset.key
       this.moveTarget.startDatetime = moment(e.target.dataset.datetime, 'YYYY-MM-DD HH:mm:ss')
       this.moveTarget.startY = e.pageY
+      this.moveTarget.element = e.target
+      this.moveTarget.top = parseInt(e.target.style.top)
     },
-    drag: function(e) {
-      if (!this.moveTarget.flag) return
-      const height = e.pageY - this.moveTarget.startY
-      if (e.pageY === 0 || Math.abs(height) < MIN_HEIGHT) return
-      const minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-      let datetime
-      if (minutes > 0) {
-        datetime = this.moveTarget.startDatetime.clone().add(minutes, 'minutes')
-      } else {
-        datetime = this.moveTarget.startDatetime.clone().subtract(Math.abs(minutes), 'minutes')
-      }
-      this.moveTarget.endDatetime = datetime
+    resizeMousedown: function(e) {
+      if (this.moveTarget.flag) return
+      this.moveTarget.flag = true
+      this.moveTarget.mode = 'resize'
+      this.moveTarget.key = e.target.parentNode.dataset.key
+      this.moveTarget.startDatetime = moment(e.target.parentNode.dataset.datetime, 'YYYY-MM-DD HH:mm:ss')
+      this.moveTarget.startY = e.pageY
+      this.moveTarget.element = e.target.parentNode
+      this.moveTarget.minutes = (parseInt(e.target.parentNode.style.height) / MIN_HEIGHT) * MIN_MINUTES
     },
-    dragend: function(e) {
-      if (!this.moveTarget.flag || this.moveTarget.endDatetime == null) return
-      const obj = {
-        '.key': this.moveTarget.key,
-        datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
-      }
-      this.editEventAction(obj)
-      this.resetMoveTarget()
+    resetDragTarget() {
+      this.dragTarget.flag = false
+      this.dragTarget.datetime = null
+      this.dragTarget.minutes = null
+      this.dragTarget.startY = null
     },
     resetMoveTarget() {
       this.moveTarget.flag = false
+      this.moveTarget.mode = null
       this.moveTarget.key = null
       this.moveTarget.startDatetime = null
       this.moveTarget.endDatetime = null
       this.moveTarget.startY = null
-    },
-    removeClick(e) {
-      this.removeEvent(e.target.parentNode.parentNode.dataset.key)
-    },
-    moveMouseup(e) {
-      const height = e.target.offsetHeight >= MIN_HEIGHT ? e.target.offsetHeight : MIN_HEIGHT
-      const obj = {
-        '.key': e.target.dataset.key,
-        minutes: Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
-      }
-      this.editEventAction(obj)
+      this.moveTarget.element = null
+      this.moveTarget.top = null
+      this.moveTarget.minutes = null
     }
   }
 }
@@ -423,13 +454,13 @@ export default {
     font-size: 12px;
     line-height: 1.2em;
     text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
-    resize: vertical;
     cursor: move;
 
     &.moved {
       opacity: 0.5;
     }
 
+    .after,
     .remove {
       display: none;
     }
@@ -437,8 +468,20 @@ export default {
     &:hover {
       overflow: hidden;
 
-      & > .remove {
-        background: #3c3a33;
+      .after {
+        background: rgba(255, 255, 255, 0.3);
+        display: block;
+        border-radius: 10px 10px 0 0;
+        position: absolute;
+        left: 25%;
+        width: 50%;
+        height: 5px;
+        bottom: 0;
+        cursor: row-resize;
+      }
+
+      .remove {
+        background: rgba(255, 255, 255, 0.3);
         display: flex;
         justify-content: center;
         align-items: center;
