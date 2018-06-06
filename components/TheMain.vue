@@ -346,6 +346,14 @@ export default {
     updateTimeLine() {
       const top = (moment().diff(moment(this.optionForm.startTime, 'HH:mm'), 'minutes') / MIN_MINUTES) * MIN_HEIGHT + 86
       this.$refs.timeLine.style.top = `${parseInt(top)}px`
+      const start = parseInt(this.optionForm.startTime.slice(0, 2))
+      const end = parseInt(this.optionForm.endTime.slice(0, 2))
+      const hours = parseInt(moment().format('HH'))
+      if (start <= hours && hours <= end) {
+        this.$refs.timeLine.style.display = 'block'
+      } else {
+        this.$refs.timeLine.style.display = 'none'
+      }
     }
   },
   beforeDestroy() {
@@ -504,6 +512,7 @@ export default {
 }
 
 .time-line {
+  display: none;
   border-top: 1px solid #dd8a61;
   height: 1px;
   position: absolute;
