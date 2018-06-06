@@ -100,7 +100,7 @@ export default {
       startY: null,
       element: null,
       top: null,
-      minutes: null
+      height: null
     }
   }),
   watch: {
@@ -266,10 +266,10 @@ export default {
             datetime: this.formatTime(this.moveTarget.endDatetime, 'YYYY-MM-DD HH:mm:ss')
           }
         }
-        if (this.moveTarget.mode === 'resize' && this.moveTarget.minutes != null) {
+        if (this.moveTarget.mode === 'resize' && this.moveTarget.height != null) {
           obj = {
             '.key': this.moveTarget.key,
-            minutes: this.moveTarget.minutes
+            minutes: (parseInt(this.moveTarget.element.style.height) / MIN_HEIGHT) * MIN_MINUTES
           }
         }
         if (obj != null) this.editEventAction(obj)
@@ -303,8 +303,7 @@ export default {
           this.moveTarget.element.style.top = `${this.moveTarget.top + (minutes / MIN_MINUTES) * MIN_HEIGHT}px`
         }
         if (this.moveTarget.mode === 'resize') {
-          this.moveTarget.minutes = Math.abs(minutes)
-          this.moveTarget.element.style.height = `${(Math.abs(minutes) / MIN_MINUTES) * MIN_HEIGHT}px`
+          this.moveTarget.element.style.height = `${(minutes / MIN_MINUTES) * MIN_HEIGHT + this.moveTarget.height}px`
         }
       }
     },
@@ -326,7 +325,7 @@ export default {
       this.moveTarget.startDatetime = moment(e.target.parentNode.dataset.datetime, 'YYYY-MM-DD HH:mm:ss')
       this.moveTarget.startY = e.pageY
       this.moveTarget.element = e.target.parentNode
-      this.moveTarget.minutes = (parseInt(e.target.parentNode.style.height) / MIN_HEIGHT) * MIN_MINUTES
+      this.moveTarget.height = parseInt(e.target.parentNode.style.height)
     },
     resetDragTarget() {
       this.dragTarget.flag = false
@@ -343,7 +342,7 @@ export default {
       this.moveTarget.startY = null
       this.moveTarget.element = null
       this.moveTarget.top = null
-      this.moveTarget.minutes = null
+      this.moveTarget.height = null
     }
   }
 }
