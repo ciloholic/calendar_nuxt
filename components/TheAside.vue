@@ -24,10 +24,10 @@
           <i class="el-icon-plus"></i>
         </el-button>
         <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
-          <i class="el-icon-edit"></i>
+          <i class="el-icon-edit" :style="`background: ${data.color};`"></i>
         </el-button>
         <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)">
-          <i class="el-icon-edit"></i>
+          <i class="el-icon-edit" :style="`background: ${data.color};`"></i>
         </el-button>
       </div>
     </el-tree>
