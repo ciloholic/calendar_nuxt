@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import Common from '~/components/BaseCommon'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 moment.locale('ja')
@@ -180,15 +181,6 @@ export default {
       const height = (event.minutes / MIN_MINUTES) * MIN_HEIGHT
       const color = target ? this.convRgba('#ffffff') : this.convRgba(event.color)
       return `background:${color};border-color:${event.color};top:${top}px;height:${height}px;`
-    },
-    convRgba(color, alpha = 0.5) {
-      const rgba = {
-        r: parseInt(color.slice(1, 3), 16),
-        g: parseInt(color.slice(3, 5), 16),
-        b: parseInt(color.slice(5, 7), 16),
-        a: alpha
-      }
-      return `rgba(${Object.values(rgba).join(',')})`
     },
     dayEvent(dayMoment) {
       return this.showEvents.filter(v => v.datetime.isSame(dayMoment, 'day'))
@@ -358,7 +350,8 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.intervalId)
-  }
+  },
+  mixins: [Common]
 }
 </script>
 

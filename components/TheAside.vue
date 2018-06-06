@@ -19,15 +19,15 @@
       ref="taskTree"
       @node-click="nodeClick">
       <div class="node-tree" slot-scope="{ node, data }">
-        <div class="label" :class="{child: isParent(node)}">{{ node.label }}</div>
-        <el-button v-if="!isParent(node)" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
+        <div class="label" :class="{child: !isParent(node)}">{{ node.label }}</div>
+        <el-button v-if="isParent(node)" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-plus"></i>
         </el-button>
-        <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
-          <i class="el-icon-edit" :style="`background: ${data.color};`"></i>
+        <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
+          <i class="el-icon-edit" :style="`background: ${convRgba(data.color)};`"></i>
         </el-button>
-        <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)">
-          <i class="el-icon-edit" :style="`background: ${data.color};`"></i>
+        <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)">
+          <i class="el-icon-edit"></i>
         </el-button>
       </div>
     </el-tree>
@@ -124,6 +124,7 @@
 </template>
 
 <script>
+import Common from '~/components/BaseCommon'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -179,7 +180,7 @@ export default {
       updateCalendarAction: 'UPDATE_CALENDAR'
     }),
     isParent(node) {
-      return node.parent.data.children != null
+      return node.parent.data.children == null
     },
     filterTask(v, d) {
       if (!v) return true
@@ -319,7 +320,8 @@ export default {
       })
       return color
     }
-  }
+  },
+  mixins: [Common]
 }
 </script>
 
