@@ -61,7 +61,7 @@
       </ul>
     </div>
     <!-- time line -->
-    <!--<div class="time-line" style="top: 87px;"></div>-->
+    <div ref="timeLine" class="time-line"></div>
   </el-main>
 </template>
 
@@ -78,6 +78,7 @@ export default {
     title: 'Main'
   },
   data: () => ({
+    intervalId: null,
     weekList: [],
     dayList: [],
     currentDay: moment(),
@@ -126,6 +127,12 @@ export default {
       const end = this.formatTime(this.days[this.days.length - 1], 'MM/DD')
       return `${start} 〜 ${end}`
     }
+  },
+  mounted() {
+    this.updateTimeLine()
+    this.intervalId = setInterval(() => {
+      this.updateTimeLine()
+    }, 60 * 1000)
   },
   methods: {
     ...mapActions({
@@ -343,7 +350,14 @@ export default {
       this.moveTarget.element = null
       this.moveTarget.top = null
       this.moveTarget.height = null
+    },
+    updateTimeLine() {
+      const top = (moment().diff(moment(this.optionForm.startTime, 'HH:mm'), 'minutes') / MIN_MINUTES) * MIN_HEIGHT + 86
+      this.$refs.timeLine.style.top = `${parseInt(top)}px`
     }
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId)
   }
 }
 </script>
@@ -501,7 +515,7 @@ export default {
   height: 1px;
   position: absolute;
   top: 72px;
-  left: 45px;
-  right: 10px;
+  left: 50px;
+  right: 15px;
 }
 </style>
