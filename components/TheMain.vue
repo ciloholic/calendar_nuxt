@@ -250,8 +250,8 @@ export default {
         height = height >= MIN_HEIGHT ? height : MIN_HEIGHT
         this.dragTarget.minutes = Math.ceil(height / MIN_HEIGHT) * MIN_MINUTES
         const obj = {
-          uid: this.user.uid,
           id: this.targetTask.id,
+          uid: this.user.uid,
           datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
           minutes: this.dragTarget.minutes
         }
