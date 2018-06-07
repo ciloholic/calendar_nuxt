@@ -1,39 +1,40 @@
 <template>
   <el-main>
     <!-- header -->
-    <div class="week-label-group">
-      <div class="week-label">
+    <div class="weekLabel">
+      <div class="weekLabel__item">
         <el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button>
       </div>
-      <div class="week-label">{{ labelWeekText }}</div>
-      <div class="week-label">
+      <div class="weekLabel__item">{{ labelWeekText }}</div>
+      <div class="weekLabel__item">
         <el-button size="mini" @click="onNextClick">Next<i class="el-icon-arrow-right el-icon-right"></i></el-button>
       </div>
     </div>
     <!-- side label -->
-    <div class="side-label-group">
+    <div class="sideLabel">
       <ul>
         <li v-for="d in dayList" :key="d">{{ d + ':00' }}</li>
       </ul>
     </div>
-    <!-- main calendar -->
-    <div v-for="(_, w) in weekList" :key="w" class="day-group" :class="{today: isToday(days[w])}">
-      <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
+    <!-- calendar -->
+    <div v-for="(_, w) in weekList" :key="w" class="calendar" :class="{today: isToday(days[w])}">
+      <div class="dayLabel">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul
         @mousedown="dragMousedown"
         @mouseup="mouseup"
         @mouseleave="mouseleave"
         @mousemove="mousemove">
+        <!-- time list -->
         <li
           v-for="t in timeList"
           :key="t.id"
-          :class="`day-time m${t.mm}`"
+          :class="`dayTime m${t.mm}`"
           :data-date="`${formatTime(days[w], 'YYYY-MM-DD')} ${t.id}`">
         </li>
         <!-- event list -->
         <div
           v-for="event in dayEvent(days[w])"
-          class="eventBlock"
+          class="eventList"
           :class="{moved: moveTarget.flag && event['.key'] === moveTarget.key }"
           :key="event['.key']"
           :data-key="event['.key']"
@@ -43,25 +44,25 @@
           @mouseup.stop="mouseup"
           @mousemove.stop="mousemove">
           {{ event.name }}
-          <div class="after"
+          <div class="eventList__after"
             @mousedown.stop="resizeMousedown"
             @mouseup.stop="mouseup"
             @mousemove.stop="mousemove">
           </div>
-          <div @click.stop="removeClick" class="remove">
+          <div @click.stop="removeClick" class="eventList__remove">
             <i class="el-icon-close"></i>
           </div>
         </div>
         <!-- target event -->
         <div
           v-if="dragTarget.flag && isTargetDay(days[w])"
-          class="eventBlock selected"
+          class="eventList target"
           :style="setStyle(dragTarget, true)">
         </div>
       </ul>
     </div>
     <!-- time line -->
-    <div ref="timeLine" class="time-line"></div>
+    <div ref="timeLine" class="timeLine"></div>
   </el-main>
 </template>
 
@@ -378,18 +379,18 @@ export default {
   cursor: crosshair;
 }
 
-.week-label-group {
+.weekLabel {
   display: flex;
   justify-content: space-between;
   width: 100vw;
   margin-bottom: 12px;
 
-  .week-label {
+  &__item {
     font-size: 15px;
   }
 }
 
-.side-label-group {
+.sideLabel {
   display: flex;
 
   ul {
@@ -403,7 +404,7 @@ export default {
   }
 }
 
-.day-group {
+.calendar {
   flex: 1;
 
   ul {
@@ -414,13 +415,13 @@ export default {
     background: rgba(255, 255, 255, 0.1);
   }
 
-  .day-label {
+  .dayLabel {
     font-size: 12px;
     text-align: center;
     padding: 3px 0;
   }
 
-  .day-time {
+  .dayTime {
     width: 100%;
     height: 12px;
     font-size: 10px;
@@ -429,7 +430,7 @@ export default {
       background: #999;
     }
 
-    &.selected {
+    &.target {
       background: #999;
     }
 
@@ -455,7 +456,7 @@ export default {
     border-right: 1px solid #888;
   }
 
-  .eventBlock {
+  .eventList {
     border: 1px solid #fff;
     width: 100%;
     position: absolute;
@@ -474,44 +475,45 @@ export default {
       opacity: 0.5;
     }
 
-    .after,
-    .remove {
+    &__after {
       display: none;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px 10px 0 0;
+      position: absolute;
+      left: 25%;
+      width: 50%;
+      height: 5px;
+      bottom: 0;
+      cursor: row-resize;
+    }
+
+    &__remove {
+      display: none;
+      background: rgba(255, 255, 255, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      font-size: 0.8em;
+      cursor: default;
     }
 
     &:hover {
       overflow: hidden;
 
-      .after {
-        background: rgba(255, 255, 255, 0.3);
+      .eventList__after,
+      .eventList__remove {
         display: block;
-        border-radius: 10px 10px 0 0;
-        position: absolute;
-        left: 25%;
-        width: 50%;
-        height: 5px;
-        bottom: 0;
-        cursor: row-resize;
-      }
-
-      .remove {
-        background: rgba(255, 255, 255, 0.3);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 10px;
-        height: 10px;
-        font-size: 0.8em;
-        cursor: default;
       }
     }
   }
 }
 
-.time-line {
+.timeLine {
   display: none;
   border-top: 1px solid #dd8a61;
   height: 1px;

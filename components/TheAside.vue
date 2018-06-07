@@ -1,15 +1,14 @@
 <template>
   <el-aside width="100vw">
-    <div class="button-group">
-      <!-- option button -->
+    <!-- option button -->
+    <div class="optionButton">
       <el-button type="info" size="mini" @click="optionDialog = true">オプション</el-button>
-      <!-- logout button -->
       <el-button type="danger" size="mini" @click="logout()">ログアウト</el-button>
     </div>
     <!-- search -->
     <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
     <!-- project add button -->
-    <el-button type="primary" size="mini" class="project-add-button" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
+    <el-button type="primary" size="mini" class="projectAddButton" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
     <!-- project node tree -->
     <el-tree
       :data="showProjects"
@@ -18,9 +17,9 @@
       node-key=".key"
       ref="taskTree"
       @node-click="nodeClick">
-      <div class="node-tree" slot-scope="{ node, data }">
-        <div class="label" :class="{child: !isParent(node)}">{{ node.label }}</div>
-        <el-button v-if="isParent(node)" type="text" size="mini" class="add-button" @click.stop="addTaskButton(node, data)">
+      <div class="nodeTree" slot-scope="{ node, data }">
+        <div class="nodeTree__label" :class="{nodeTree__child: !isParent(node)}">{{ node.label }}</div>
+        <el-button v-if="isParent(node)" type="text" size="mini" class="nodeTree__addButton" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-plus"></i>
         </el-button>
         <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
@@ -32,7 +31,7 @@
       </div>
     </el-tree>
     <!-- dialog - option -->
-    <el-dialog custom-class="option" title="オプション" width="30%" :visible.sync="optionDialog" :before-close="beforeClose">
+    <el-dialog custom-class="optionDialog" title="オプション" width="30%" :visible.sync="optionDialog" :before-close="beforeClose">
       <el-form :model="optionForm">
         <el-form-item label="土日" label-width="30%">
           <el-switch
@@ -347,7 +346,7 @@ export default {
     }
   }
 
-  .button-group {
+  .optionButton {
     display: flex;
     justify-content: center;
     margin-bottom: 10px;
@@ -357,7 +356,7 @@ export default {
     }
   }
 
-  .project-add-button {
+  .projectAddButton {
     width: 100%;
     margin-bottom: 10px;
   }
@@ -366,7 +365,7 @@ export default {
     margin-bottom: 10px;
     border-radius: 3px;
 
-    .node-tree {
+    .nodeTree {
       flex: 1;
       display: flex;
       align-items: center;
@@ -378,20 +377,20 @@ export default {
         color: #606266;
       }
 
-      .label {
+      &__label {
         max-width: 15rem;
         font-size: 0.8em;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         user-select: none;
-
-        &.child {
-          font-size: 0.6em;
-        }
       }
 
-      .add-button {
+      &__child {
+        font-size: 0.6em;
+      }
+
+      &__addButton {
         margin-left: auto;
       }
     }
@@ -416,7 +415,7 @@ export default {
   padding: 0 20px;
 }
 
-.el-dialog.option > .el-dialog__body {
+.el-dialog.optionDialog > .el-dialog__body {
   padding: 0 20px 10px 20px;
 }
 

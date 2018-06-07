@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <a v-if="!loading" class="signin_btn" @click="doLogin">
+    <a v-if="!loading" class="googleSignin" @click="doLogin">
       <img src="~/static/btn_google_signin.png">
     </a>
   </el-main>
@@ -44,7 +44,7 @@ export default {
   justify-content: center;
   align-items: center;
 
-  .signin_btn {
+  .googleSignin {
     display: block;
     width: 200px;
     height: 48px;
