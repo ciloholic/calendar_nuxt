@@ -16,7 +16,8 @@
       :filter-node-method="filterTask"
       node-key=".key"
       ref="taskTree"
-      @node-click="nodeClick">
+      @node-click="nodeClick"
+      highlight-current>
       <div class="nodeTree" slot-scope="{ node, data }">
         <div class="nodeTree__label" :class="{nodeTree__child: !isParent(node)}">{{ node.label }}</div>
         <el-button v-if="isParent(node)" type="text" size="mini" class="nodeTree__addButton" @click.stop="addTaskButton(node, data)">
@@ -46,7 +47,7 @@
             placeholder="Start time"
             v-model="optionForm.startTime"
             @change="updateOption"
-            :picker-options="{ start: '00:00', step: '01:00', end: '08:00' }"
+            :picker-options="{ start: '00:00', step: '01:00', end: '11:00' }"
             :clearable="false">
           </el-time-select>
         </el-form-item>
@@ -55,7 +56,7 @@
             placeholder="End time"
             v-model="optionForm.endTime"
             @change="updateOption"
-            :picker-options="{ start: '21:00', step: '01:00', end: '23:00', minTime: optionForm.startTime}"
+            :picker-options="{ start: '15:00', step: '01:00', end: '23:00', minTime: optionForm.startTime}"
             :clearable="false">
           </el-time-select>
         </el-form-item>

@@ -369,6 +369,7 @@ export default {
   background: rgba(255, 255, 255, 0.1);
   grid-area: main;
   display: flex;
+  align-content: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   height: calc(100vh - 40px);
@@ -406,6 +407,7 @@ export default {
 
 .calendar {
   flex: 1;
+  border-bottom: 1px solid #888;
 
   ul {
     position: relative;
