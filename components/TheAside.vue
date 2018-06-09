@@ -326,16 +326,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-button + .el-button {
-  margin-left: 5px;
-}
-
 .el-aside {
   background: rgba(255, 255, 255, 0.15);
   grid-area: aside;
   height: calc(100vh - 40px);
   border-radius: 3px;
   padding: 10px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .el-input {
     color: #fff;
@@ -354,6 +354,10 @@ export default {
 
     .el-button {
       flex: auto;
+    }
+
+    .el-button + .el-button {
+      margin-left: 5px;
     }
   }
 

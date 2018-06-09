@@ -21,7 +21,7 @@ export default {
 .el-container {
   padding: 0 15px 0 15px;
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 300px 1fr;
   grid-template-rows: 20px auto 20px;
   grid-gap: 0 15px;
   grid-template-areas:
