@@ -1,7 +1,7 @@
 <template>
   <el-main>
     <!-- header -->
-    <div class="weekLabel">
+    <div ref="weekLabel" class="weekLabel">
       <div class="weekLabel__item">
         <el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button>
       </div>
@@ -11,7 +11,7 @@
       </div>
     </div>
     <!-- side label -->
-    <div class="sideLabel">
+    <div ref="sideLabel" class="sideLabel">
       <ul>
         <li v-for="d in dayList" :key="d">{{ d + ':00' }}</li>
       </ul>
@@ -112,6 +112,7 @@ export default {
       this.setCalendar(moment())
       this.convEvents()
       this.updateCalendarAction(false)
+      this.updateTimeLine()
     },
     events: function() {
       this.createProjectMaster()
@@ -345,16 +346,15 @@ export default {
       this.moveTarget.height = null
     },
     updateTimeLine() {
-      const top = (moment().diff(moment(this.optionForm.startTime, 'HH:mm'), 'minutes') / MIN_MINUTES) * MIN_HEIGHT + 86
-      this.$refs.timeLine.style.top = `${parseInt(top)}px`
+      const header = this.$refs.sideLabel.getBoundingClientRect()
+      const minutes = moment().diff(moment(this.optionForm.startTime, 'HH:mm'), 'minutes')
+      const marginBottom = parseInt(document.defaultView.getComputedStyle(this.$refs.weekLabel, null).marginBottom)
+      const top = parseInt((minutes / MIN_MINUTES) * MIN_HEIGHT + header.top + window.pageYOffset + marginBottom)
+      this.$refs.timeLine.style.top = `${top}px`
       const start = parseInt(this.optionForm.startTime.slice(0, 2))
       const end = parseInt(this.optionForm.endTime.slice(0, 2))
       const hours = parseInt(moment().format('HH'))
-      if (start <= hours && hours <= end) {
-        this.$refs.timeLine.style.display = 'block'
-      } else {
-        this.$refs.timeLine.style.display = 'none'
-      }
+      this.$refs.timeLine.style.display = start <= hours && hours <= end ? 'block' : 'none'
     }
   },
   beforeDestroy() {
