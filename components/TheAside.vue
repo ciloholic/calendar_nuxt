@@ -383,7 +383,7 @@ export default {
       }
 
       &__label {
-        max-width: 15rem;
+        max-width: 20rem;
         font-size: 0.8em;
         white-space: nowrap;
         overflow: hidden;

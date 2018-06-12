@@ -32,27 +32,29 @@
           :data-date="`${formatTime(days[w], 'YYYY-MM-DD')} ${t.id}`">
         </li>
         <!-- event list -->
-        <div
-          v-for="event in dayEvent(days[w])"
-          class="eventList"
-          :class="{moved: moveTarget.flag && event['.key'] === moveTarget.key }"
-          :key="event['.key']"
-          :data-key="event['.key']"
-          :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
-          :style="setStyle(event)"
-          @mousedown.stop="moveMousedown"
-          @mouseup.stop="mouseup"
-          @mousemove.stop="mousemove">
-          {{ event.name }}
-          <div class="eventList__after"
-            @mousedown.stop="resizeMousedown"
+        <transition-group name="event">
+          <div
+            v-for="event in dayEvent(days[w])"
+            class="eventList"
+            :class="{moved: moveTarget.flag && event['.key'] === moveTarget.key }"
+            :key="event['.key']"
+            :data-key="event['.key']"
+            :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
+            :style="setStyle(event)"
+            @mousedown.stop="moveMousedown"
             @mouseup.stop="mouseup"
             @mousemove.stop="mousemove">
+            {{ event.name }}
+            <div class="eventList__after"
+              @mousedown.stop="resizeMousedown"
+              @mouseup.stop="mouseup"
+              @mousemove.stop="mousemove">
+            </div>
+            <div @click.stop="removeClick" class="eventList__remove">
+              <i class="el-icon-close"></i>
+            </div>
           </div>
-          <div @click.stop="removeClick" class="eventList__remove">
-            <i class="el-icon-close"></i>
-          </div>
-        </div>
+        </transition-group>
         <!-- target event -->
         <div
           v-if="dragTarget.flag && isTargetDay(days[w])"
@@ -492,7 +494,6 @@ export default {
     &__remove {
       display: none;
       background: rgba(255, 255, 255, 0.3);
-      display: flex;
       justify-content: center;
       align-items: center;
       position: absolute;
@@ -509,9 +510,21 @@ export default {
 
       .eventList__after,
       .eventList__remove {
-        display: block;
+        display: flex;
       }
     }
+  }
+
+  .event-enter-active {
+    transition: all 1s;
+  }
+
+  .event-enter {
+    opacity: 0;
+  }
+
+  .event-enter-to {
+    opacity: 1;
   }
 }
 
