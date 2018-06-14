@@ -9,6 +9,7 @@ moment.locale('ja')
 const db = firebase.database()
 const projectsRef = db.ref('/projects')
 const eventsRef = db.ref('/events')
+const usersRef = db.ref('/users')
 const provider = new firebase.auth.GoogleAuthProvider()
 
 Vue.use(Vuex)
@@ -90,6 +91,13 @@ const store = () => {
       },
       SET_USER({ commit }, user) {
         commit('setUser', user)
+        if (!user) return
+        const obj = {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email
+        }
+        usersRef.child(user.uid).set(obj)
       },
       SET_LOADING({ commit }, { loading }) {
         commit('setLoading', { loading })
