@@ -10,6 +10,8 @@
         <el-button size="mini" @click="onNextClick">Next<i class="el-icon-arrow-right el-icon-right"></i></el-button>
       </div>
     </div>
+    <!-- time line -->
+    <div ref="timeLine" class="timeLine"></div>
     <!-- side label -->
     <div ref="sideLabel" class="sideLabel">
       <ul>
@@ -63,8 +65,6 @@
         </div>
       </ul>
     </div>
-    <!-- time line -->
-    <div ref="timeLine" class="timeLine"></div>
   </el-main>
 </template>
 
