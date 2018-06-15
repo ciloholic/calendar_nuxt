@@ -1,5 +1,7 @@
 # re_calendar
 
+![re-calendar.gif](https://raw.githubusercontent.com/ciloholic/re_calendar/images/re-calendar.gif)
+
 ``` bash:yarn
 yarn
 yarn run dev
