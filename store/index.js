@@ -3,8 +3,7 @@ import Vuex from 'vuex'
 import uuid from 'uuid/v1'
 import firebase from '~/plugins/firebase'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
-import moment from 'moment'
-moment.locale('ja')
+import moment from '~/plugins/moment'
 
 const db = firebase.database()
 const projectsRef = db.ref('/projects')

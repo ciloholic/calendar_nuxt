@@ -71,8 +71,7 @@
 <script>
 import Common from '~/components/BaseCommon'
 import { mapGetters, mapActions } from 'vuex'
-import moment from 'moment'
-moment.locale('ja')
+import moment from '~/plugins/moment'
 
 const MIN_HEIGHT = 12
 const MIN_MINUTES = 15
