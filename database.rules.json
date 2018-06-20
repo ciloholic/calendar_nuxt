@@ -1,9 +1,31 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null",
+    ".read": false,
+    ".write": false,
+    "projects": {
+      ".read": "root.child('users/' + auth.uid).exists()",
+    	".write": "root.child('users/' + auth.uid).exists()",
+      "$project_id": {
+        ".validate": "newData.hasChildren(['name', 'color', 'delete'])",
+        "children": {
+          ".validate": "newData.hasChildren()"
+        }
+      }
+    },
     "events": {
+      ".read": "root.child('users/' + auth.uid).exists()",
+    	".write": "root.child('users/' + auth.uid).exists()",
+      "$event_id": {
+        ".validate": "newData.hasChildren(['id', 'uid', 'datetime', 'minutes'])"
+      },
       ".indexOn": "uid"
+    },
+    "users": {
+      "$user_id": {
+        ".validate": "newData.hasChildren(['uid', 'email', 'displayName'])",
+        ".read": "auth.uid === $user_id",
+        ".write": "auth.uid === $user_id"
+      }
     }
   }
 }
