@@ -2,7 +2,6 @@ require('dotenv').config()
 
 module.exports = {
   mode: 'ssr',
-  loading: '~/components/TheLoading.vue',
   head: {
     title: 'Top',
     titleTemplate: 'ReCalendar | %s',
@@ -18,6 +17,7 @@ module.exports = {
     'element-ui/lib/theme-chalk/index.css',
     { src: '~/assets/app.scss', lang: 'scss' }
   ],
+  loading: '~/components/TheLoading.vue',
   router: { middleware: 'auth' },
   plugins: ['~/plugins/element-ui.js'],
   modules: ['@nuxtjs/dotenv'],
