@@ -16,20 +16,20 @@ export default {
   },
   async mounted() {
     if (process.browser) {
-      this.setLoading({ loading: true })
+      this.SET_LOADING({ loading: true })
       let user
       if (!this.user) user = await auth()
       this.user ? Promise.resolve() : this.$store.dispatch('SET_USER', user)
-      this.setLoading({ loading: false })
+      this.SET_LOADING({ loading: false })
     }
   },
   computed: {
     ...mapGetters(['user', 'loading'])
   },
   methods: {
-    ...mapActions({ login: 'LOGIN', setLoading: 'SET_LOADING' }),
+    ...mapActions(['LOGIN', 'SET_LOADING']),
     doLogin() {
-      this.login()
+      this.LOGIN()
         .then(() => console.log('resloved'))
         .catch(err => console.error(err))
     }

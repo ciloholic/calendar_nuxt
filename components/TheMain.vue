@@ -112,7 +112,7 @@ export default {
       if (!v) return
       this.setCalendar(moment())
       this.convEvents()
-      this.updateCalendarAction(false)
+      this.UPDATE_CALENDAR(false)
       this.updateTimeLine()
     },
     events: function() {
@@ -122,7 +122,7 @@ export default {
   },
   created() {
     this.setCalendar(moment())
-    this.getEventsAction(this.user)
+    this.GET_EVENTS(this.user)
   },
   computed: {
     ...mapGetters(['user', 'projects', 'events', 'targetTask', 'optionForm', 'isCalendar']),
@@ -139,14 +139,7 @@ export default {
     }, 60 * 1000)
   },
   methods: {
-    ...mapActions({
-      getEventsAction: 'GET_EVENTS',
-      addEventAction: 'ADD_EVENT',
-      editEventAction: 'EDIT_EVENT',
-      removeEvent: 'REMOVE_EVENT',
-      setTargetTaskAction: 'SET_TARGET_TASK',
-      updateCalendarAction: 'UPDATE_CALENDAR'
-    }),
+    ...mapActions(['GET_EVENTS', 'ADD_EVENT', 'EDIT_EVENT', 'REMOVE_EVENT', 'SET_TARGET_TASK', 'UPDATE_CALENDAR']),
     setCalendar(dayMoment) {
       // 初期化
       this.timeList = []
@@ -235,7 +228,7 @@ export default {
       this.setCalendar(this.currentDay.add(1, 'weeks'))
     },
     removeClick(e) {
-      this.removeEvent(e.target.parentNode.parentNode.dataset.key)
+      this.REMOVE_EVENT(e.target.parentNode.parentNode.dataset.key)
     },
     dragMousedown: function(e) {
       if (this.targetTask.id == null) {
@@ -258,7 +251,7 @@ export default {
           datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
           minutes: this.dragTarget.minutes
         }
-        this.addEventAction(obj)
+        this.ADD_EVENT(obj)
       }
       if (this.moveTarget.flag && this.moveTarget.key != null) {
         let obj
@@ -274,7 +267,7 @@ export default {
             minutes: (parseInt(this.moveTarget.element.style.height) / MIN_HEIGHT) * MIN_MINUTES
           }
         }
-        if (obj != null) this.editEventAction(obj)
+        if (obj != null) this.EDIT_EVENT(obj)
       }
       this.resetDragTarget()
       this.resetMoveTarget()

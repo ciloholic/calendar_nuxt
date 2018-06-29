@@ -3,7 +3,7 @@
     <!-- option button -->
     <div class="optionButton">
       <el-button type="info" size="mini" @click="optionDialog = true">オプション</el-button>
-      <el-button type="danger" size="mini" @click="logout()">ログアウト</el-button>
+      <el-button type="danger" size="mini" @click="LOGOUT()">ログアウト</el-button>
     </div>
     <!-- search -->
     <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
@@ -140,10 +140,8 @@ export default {
     taskForm: { name: '', node: null, data: null }
   }),
   created() {
-    // オプション取得
-    this.getOptionAction()
-    // プロジェクト取得
-    this.getProjectsAction()
+    this.GET_OPTION()
+    this.GET_PROJECTS()
   },
   watch: {
     filterKeyword(v) {
@@ -164,21 +162,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      logout: 'LOGOUT',
-      getProjectsAction: 'GET_PROJECTS',
-      addProjectAction: 'ADD_PROJECT',
-      editProjectAction: 'EDIT_PROJECT',
-      removeProjectAction: 'REMOVE_PROJECT',
-      addTaskAction: 'ADD_TASK',
-      editTaskAction: 'EDIT_TASK',
-      removeTaskAction: 'REMOVE_TASK',
-      getEventsAction: 'GET_EVENTS',
-      setTargetTaskAction: 'SET_TARGET_TASK',
-      setOptionAction: 'SET_OPTION',
-      getOptionAction: 'GET_OPTION',
-      updateCalendarAction: 'UPDATE_CALENDAR'
-    }),
+    ...mapActions([
+      'LOGOUT',
+      'GET_PROJECTS',
+      'ADD_PROJECT',
+      'EDIT_PROJECT',
+      'REMOVE_PROJECT',
+      'ADD_TASK',
+      'EDIT_TASK',
+      'REMOVE_TASK',
+      'GET_EVENTS',
+      'SET_TARGET_TASK',
+      'SET_OPTION',
+      'GET_OPTION',
+      'UPDATE_CALENDAR'
+    ]),
     isParent(node) {
       return node.parent.data.children == null
     },
@@ -192,15 +190,15 @@ export default {
         color: this.projectForm.color,
         delete: false
       }
-      this.addProjectAction(obj)
+      this.ADD_PROJECT(obj)
       this.resetProjectForm()
       this.projectAddDialog = false
     },
     editProject() {
       const obj = { '.key': this.projectForm.data['.key'], name: this.projectForm.name, color: this.projectForm.color }
-      this.editProjectAction(obj)
+      this.EDIT_PROJECT(obj)
       this.resetProjectForm()
-      this.getEventsAction(this.user)
+      this.GET_EVENTS(this.user)
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
@@ -217,8 +215,8 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.removeProjectAction(this.projectForm.data['.key'])
-          this.getEventsAction(this.user)
+          this.REMOVE_PROJECT(this.projectForm.data['.key'])
+          this.GET_EVENTS(this.user)
           this.projectEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -242,7 +240,7 @@ export default {
     },
     addTask() {
       const obj = { '.key': this.taskForm.data['.key'], name: this.taskForm.name }
-      this.addTaskAction(obj)
+      this.ADD_TASK(obj)
       this.resetTaskForm()
       this.taskAddDialog = false
     },
@@ -257,9 +255,9 @@ export default {
       const children = parent.data.children
       const index = children.findIndex(d => d.id === this.taskForm.data.id)
       const obj = { '.key': parent.data['.key'], name: this.taskForm.name, index: index }
-      this.editTaskAction(obj)
+      this.EDIT_TASK(obj)
       this.resetTaskForm()
-      this.getEventsAction(this.user)
+      this.GET_EVENTS(this.user)
       this.taskEditDialog = false
     },
     editTaskButton(node, data) {
@@ -279,8 +277,8 @@ export default {
           const children = parent.data.children
           const index = children.findIndex(d => d.id === this.taskForm.data.id)
           const obj = { '.key': parent.data['.key'], index: index, delete: true }
-          this.removeTaskAction(obj)
-          this.getEventsAction(this.user)
+          this.REMOVE_TASK(obj)
+          this.GET_EVENTS(this.user)
           this.taskEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -300,8 +298,8 @@ export default {
       this.optionDialog = false
     },
     updateOption() {
-      this.setOptionAction()
-      this.updateCalendarAction(true)
+      this.SET_OPTION()
+      this.UPDATE_CALENDAR(true)
     },
     nodeClick(data) {
       if (data.id == null) return
@@ -310,7 +308,7 @@ export default {
         taskName: data.name,
         color: this.getColor(data.id)
       }
-      this.setTargetTaskAction({ targetTask: obj })
+      this.SET_TARGET_TASK({ targetTask: obj })
     },
     getColor(id) {
       let color = ''
