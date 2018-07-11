@@ -101,8 +101,8 @@ const store = () => {
       SET_LOADING({ commit }, { loading }) {
         commit('setLoading', { loading })
       },
-      GET_PROJECTS: firebaseAction(({ bindFirebaseRef }) => {
-        bindFirebaseRef('projects', projectsRef)
+      GET_PROJECTS: firebaseAction(({ bindFirebaseRef }, { uid }) => {
+        bindFirebaseRef('projects', projectsRef.orderByChild('uid').equalTo(uid))
       }),
       ADD_PROJECT: firebaseAction((context, obj) => {
         projectsRef.push(obj)

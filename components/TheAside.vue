@@ -17,7 +17,9 @@
       node-key=".key"
       ref="taskTree"
       @node-click="nodeClick"
-      highlight-current>
+      highlight-current
+      draggable
+      :allow-drop="allowDrop">
       <div class="nodeTree" slot-scope="{ node, data }">
         <div class="nodeTree__label" :class="{nodeTree__child: !isParent(node)}">{{ node.label }}</div>
         <el-button v-if="isParent(node)" type="text" size="mini" class="nodeTree__addButton" @click.stop="addTaskButton(node, data)">
@@ -141,7 +143,7 @@ export default {
   }),
   created() {
     this.GET_OPTION()
-    this.GET_PROJECTS()
+    this.GET_PROJECTS(this.user)
   },
   watch: {
     filterKeyword(v) {
@@ -184,8 +186,18 @@ export default {
       if (!v) return true
       return d.name.indexOf(v) !== -1
     },
+    allowDrop(draggingNode, dropNode, type) {
+      return (
+        (draggingNode.isLeaf === false && dropNode.isLeaf === false && type !== 'inner') ||
+        (draggingNode.isLeaf === true &&
+          dropNode.isLeaf === true &&
+          draggingNode.parent.data['.key'] === dropNode.parent.data['.key'] &&
+          type !== 'inner')
+      )
+    },
     addProject() {
       const obj = {
+        uid: this.user.uid,
         name: this.projectForm.name,
         color: this.projectForm.color,
         delete: false
