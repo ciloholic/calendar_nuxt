@@ -23,10 +23,10 @@
       <div class="nodeTree" slot-scope="{ node, data }">
         <div class="nodeTree__label" :class="{nodeTree__child: !isParent(node)}">{{ node.label }}</div>
         <el-button v-if="isParent(node)" type="text" size="mini" class="nodeTree__addButton" @click.stop="addTaskButton(node, data)">
-          <i class="el-icon-plus"></i>
+          <i class="el-icon-circle-plus" :style="`color: ${convRgba(data.color, 1)};`"></i>
         </el-button>
         <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
-          <i class="el-icon-edit" :style="`background: ${convRgba(data.color)};`"></i>
+          <i class="el-icon-edit"></i>
         </el-button>
         <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)">
           <i class="el-icon-edit"></i>
@@ -390,6 +390,7 @@ export default {
 
       i {
         color: #606266;
+        font-size: 1.3em;
       }
 
       &__label {
