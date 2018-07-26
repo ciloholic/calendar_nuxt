@@ -82,6 +82,7 @@ export default {
   },
   data: () => ({
     intervalId: null,
+    sideLabelTop: 0,
     weekList: [],
     dayList: [],
     currentDay: moment(),
@@ -133,6 +134,7 @@ export default {
     }
   },
   mounted() {
+    this.sideLabelTop = this.$refs.sideLabel.getBoundingClientRect().top
     this.updateTimeLine()
     this.intervalId = setInterval(() => {
       this.updateTimeLine()
@@ -340,10 +342,9 @@ export default {
       this.moveTarget.height = null
     },
     updateTimeLine() {
-      const header = this.$refs.sideLabel.getBoundingClientRect()
       const minutes = moment().diff(moment(this.optionForm.startTime, 'HH:mm'), 'minutes')
       const marginBottom = parseInt(document.defaultView.getComputedStyle(this.$refs.weekLabel, null).marginBottom)
-      const top = parseInt((minutes / MIN_MINUTES) * MIN_HEIGHT + header.top + window.pageYOffset + marginBottom)
+      const top = parseInt((minutes / MIN_MINUTES) * MIN_HEIGHT + this.sideLabelTop + marginBottom)
       this.$refs.timeLine.style.top = `${top}px`
       const start = parseInt(this.optionForm.startTime.slice(0, 2))
       const end = parseInt(this.optionForm.endTime.slice(0, 2))
