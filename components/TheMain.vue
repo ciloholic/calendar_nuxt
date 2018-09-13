@@ -154,12 +154,7 @@ export default {
       }
       const dayList = Array.from(new Array(24)).map((_, i) => ('00' + i).slice(-2))
       this.dayList = dayList.filter(v =>
-        moment(v, 'HH').isBetween(
-          moment(this.optionForm.startTime, 'HH:mm'),
-          moment(this.optionForm.endTime, 'HH:mm'),
-          null,
-          '[]'
-        )
+        moment(v, 'HH').isBetween(moment(this.optionForm.startTime, 'HH:mm'), moment(this.optionForm.endTime, 'HH:mm'), null, '[]')
       )
       this.weekList.forEach(i => {
         this.days.push(dayMoment.clone().day(i))
@@ -174,8 +169,7 @@ export default {
     },
     setStyle(event, target = false) {
       const baseTop = moment(this.optionForm.startTime, 'HH:mm').hours() * (MIN_HEIGHT * 4)
-      const top =
-        event.datetime.hours() * (MIN_HEIGHT * 4) + (event.datetime.minutes() / MIN_MINUTES) * MIN_HEIGHT - baseTop
+      const top = event.datetime.hours() * (MIN_HEIGHT * 4) + (event.datetime.minutes() / MIN_MINUTES) * MIN_HEIGHT - baseTop
       const height = (event.minutes / MIN_MINUTES) * MIN_HEIGHT
       const color = target ? this.convRgba('#ffffff') : this.convRgba(event.color)
       return `background:${color};border-color:${event.color};top:${top}px;height:${height}px;`
@@ -206,12 +200,7 @@ export default {
     convEvents() {
       const events = this.events.filter(v => {
         const target = moment(moment(v.datetime).format('HH:mm'), 'HH:mm')
-        return target.isBetween(
-          moment(this.optionForm.startTime, 'HH:mm'),
-          moment(this.optionForm.endTime, 'HH:mm'),
-          null,
-          '[]'
-        )
+        return target.isBetween(moment(this.optionForm.startTime, 'HH:mm'), moment(this.optionForm.endTime, 'HH:mm'), null, '[]')
       })
       this.showEvents = events.map(v => {
         return {

@@ -12,11 +12,7 @@ module.exports = {
     ],
     link: [{ rel: 'icon', type: 'image/png', sizes: '32x32', href: 'favicon.png' }]
   },
-  css: [
-    'element-ui/lib/theme-chalk/reset.css',
-    'element-ui/lib/theme-chalk/index.css',
-    { src: '~/assets/app.scss', lang: 'scss' }
-  ],
+  css: ['element-ui/lib/theme-chalk/reset.css', 'element-ui/lib/theme-chalk/index.css', { src: '~/assets/app.scss', lang: 'scss' }],
   loading: '~/components/TheLoading.vue',
   router: { middleware: 'auth' },
   plugins: ['~/plugins/element-ui.js'],

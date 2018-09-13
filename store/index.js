@@ -43,13 +43,13 @@ const store = () => {
       isCalendar: state => !!state.updateCalendar
     },
     mutations: {
+      ...firebaseMutations,
       setUser(state, user) {
         state.user = user
       },
       setLoading(state, { loading }) {
         state.loading = loading
       },
-      ...firebaseMutations,
       setTargetTask(state, { targetTask }) {
         state.targetTask = targetTask
       },

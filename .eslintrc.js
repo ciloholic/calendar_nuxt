@@ -25,7 +25,7 @@ module.exports = {
       'error', {
         'semi': false,
         'singleQuote': true,
-        'printWidth': 120
+        'printWidth': 150
       }
     ]
   }
