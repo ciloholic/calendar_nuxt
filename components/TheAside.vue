@@ -3,7 +3,7 @@
     <!-- option button -->
     <div class="optionButton">
       <el-button type="info" size="mini" @click="optionDialog = true">オプション</el-button>
-      <el-button type="danger" size="mini" @click="LOGOUT()">ログアウト</el-button>
+      <el-button type="danger" size="mini" @click="googleLogout()">ログアウト</el-button>
     </div>
     <!-- search -->
     <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
@@ -142,8 +142,8 @@ export default {
     taskForm: { name: '', node: null, data: null }
   }),
   created() {
-    this.GET_OPTION()
-    this.GET_PROJECTS(this.user)
+    this.getOption()
+    this.getProjects(this.user)
   },
   watch: {
     filterKeyword(v) {
@@ -165,19 +165,19 @@ export default {
   },
   methods: {
     ...mapActions([
-      'LOGOUT',
-      'GET_PROJECTS',
-      'ADD_PROJECT',
-      'EDIT_PROJECT',
-      'REMOVE_PROJECT',
-      'ADD_TASK',
-      'EDIT_TASK',
-      'REMOVE_TASK',
-      'GET_EVENTS',
-      'SET_TARGET_TASK',
-      'SET_OPTION',
-      'GET_OPTION',
-      'UPDATE_CALENDAR'
+      'googleLogout',
+      'getProjects',
+      'addProject',
+      'editProject',
+      'removeProject',
+      'addTask',
+      'editTask',
+      'removeTask',
+      'getEvents',
+      'setTargetTask',
+      'setOption',
+      'getOption',
+      'updateCalendar'
     ]),
     isParent(node) {
       return node.parent.data.children == null
@@ -202,15 +202,15 @@ export default {
         color: this.projectForm.color,
         delete: false
       }
-      this.ADD_PROJECT(obj)
+      this.addProject(obj)
       this.resetProjectForm()
       this.projectAddDialog = false
     },
     editProject() {
       const obj = { '.key': this.projectForm.data['.key'], name: this.projectForm.name, color: this.projectForm.color }
-      this.EDIT_PROJECT(obj)
+      this.editProject(obj)
       this.resetProjectForm()
-      this.GET_EVENTS(this.user)
+      this.getEvents(this.user)
       this.projectEditDialog = false
     },
     editProjectButton(node, data) {
@@ -227,8 +227,8 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.REMOVE_PROJECT(this.projectForm.data['.key'])
-          this.GET_EVENTS(this.user)
+          this.removeProject(this.projectForm.data['.key'])
+          this.getEvents(this.user)
           this.projectEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -252,7 +252,7 @@ export default {
     },
     addTask() {
       const obj = { '.key': this.taskForm.data['.key'], name: this.taskForm.name }
-      this.ADD_TASK(obj)
+      this.addTask(obj)
       this.resetTaskForm()
       this.taskAddDialog = false
     },
@@ -267,9 +267,9 @@ export default {
       const children = parent.data.children
       const index = children.findIndex(d => d.id === this.taskForm.data.id)
       const obj = { '.key': parent.data['.key'], name: this.taskForm.name, index: index }
-      this.EDIT_TASK(obj)
+      this.editTask(obj)
       this.resetTaskForm()
-      this.GET_EVENTS(this.user)
+      this.getEvents(this.user)
       this.taskEditDialog = false
     },
     editTaskButton(node, data) {
@@ -289,8 +289,8 @@ export default {
           const children = parent.data.children
           const index = children.findIndex(d => d.id === this.taskForm.data.id)
           const obj = { '.key': parent.data['.key'], index: index, delete: true }
-          this.REMOVE_TASK(obj)
-          this.GET_EVENTS(this.user)
+          this.removeTask(obj)
+          this.getEvents(this.user)
           this.taskEditDialog = false
           this.$message({ type: 'success', message: '削除しました' })
         })
@@ -310,8 +310,8 @@ export default {
       this.optionDialog = false
     },
     updateOption() {
-      this.SET_OPTION()
-      this.UPDATE_CALENDAR(true)
+      this.setOption()
+      this.updateCalendar(true)
     },
     nodeClick(data) {
       if (data.id == null) return
@@ -320,7 +320,7 @@ export default {
         taskName: data.name,
         color: this.getColor(data.id)
       }
-      this.SET_TARGET_TASK({ targetTask: obj })
+      this.setTargetTask({ targetTask: obj })
     },
     getColor(id) {
       let color = ''

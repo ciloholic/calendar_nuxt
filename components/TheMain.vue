@@ -113,7 +113,7 @@ export default {
       if (!v) return
       this.setCalendar(moment())
       this.convEvents()
-      this.UPDATE_CALENDAR(false)
+      this.updateCalendar(false)
       this.updateTimeLine()
     },
     events: function() {
@@ -123,7 +123,7 @@ export default {
   },
   created() {
     this.setCalendar(moment())
-    this.GET_EVENTS(this.user)
+    this.getEvents(this.user)
   },
   computed: {
     ...mapGetters(['user', 'projects', 'events', 'targetTask', 'optionForm', 'isCalendar']),
@@ -141,7 +141,7 @@ export default {
     }, 60 * 1000)
   },
   methods: {
-    ...mapActions(['GET_EVENTS', 'ADD_EVENT', 'EDIT_EVENT', 'REMOVE_EVENT', 'SET_TARGET_TASK', 'UPDATE_CALENDAR']),
+    ...mapActions(['getEvents', 'addEvent', 'editEvent', 'removeEvent', 'setTargetTask', 'updateCalendar']),
     setCalendar(dayMoment) {
       // 初期化
       this.timeList = []
@@ -230,7 +230,7 @@ export default {
       this.setCalendar(this.currentDay.add(1, 'weeks'))
     },
     removeClick(e) {
-      this.REMOVE_EVENT(e.target.parentNode.parentNode.dataset.key)
+      this.removeEvent(e.target.parentNode.parentNode.dataset.key)
     },
     dragMousedown: function(e) {
       if (this.targetTask.id == null) {
@@ -253,7 +253,7 @@ export default {
           datetime: this.formatTime(this.dragTarget.datetime, 'YYYY-MM-DD HH:mm:ss'),
           minutes: this.dragTarget.minutes
         }
-        this.ADD_EVENT(obj)
+        this.addEvent(obj)
       }
       if (this.moveTarget.flag && this.moveTarget.key != null) {
         let obj
@@ -269,7 +269,7 @@ export default {
             minutes: (parseInt(this.moveTarget.element.style.height) / MIN_HEIGHT) * MIN_MINUTES
           }
         }
-        if (obj != null) this.EDIT_EVENT(obj)
+        if (obj != null) this.editEvent(obj)
       }
       this.resetDragTarget()
       this.resetMoveTarget()

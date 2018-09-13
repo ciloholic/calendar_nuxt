@@ -68,7 +68,7 @@ const store = () => {
       }
     },
     actions: {
-      LOGIN() {
+      googleLogin() {
         return new Promise((resolve, reject) => {
           firebase
             .auth()
@@ -77,7 +77,7 @@ const store = () => {
             .catch(err => reject(err))
         })
       },
-      LOGOUT({ commit }) {
+      googleLogout({ commit }) {
         return new Promise((resolve, reject) => {
           firebase
             .auth()
@@ -88,7 +88,7 @@ const store = () => {
             })
         })
       },
-      SET_USER({ commit }, user) {
+      setUser({ commit }, user) {
         commit('setUser', user)
         if (!user) return
         const obj = {
@@ -98,22 +98,22 @@ const store = () => {
         }
         usersRef.child(user.uid).set(obj)
       },
-      SET_LOADING({ commit }, { loading }) {
+      setLoading({ commit }, { loading }) {
         commit('setLoading', { loading })
       },
-      GET_PROJECTS: firebaseAction(({ bindFirebaseRef }, { uid }) => {
+      getProjects: firebaseAction(({ bindFirebaseRef }, { uid }) => {
         bindFirebaseRef('projects', projectsRef.orderByChild('uid').equalTo(uid))
       }),
-      ADD_PROJECT: firebaseAction((context, obj) => {
+      addProject: firebaseAction((context, obj) => {
         projectsRef.push(obj)
       }),
-      EDIT_PROJECT: firebaseAction((context, obj) => {
+      editProject: firebaseAction((context, obj) => {
         projectsRef.child(obj['.key']).update({ name: obj.name, color: obj.color })
       }),
-      REMOVE_PROJECT: firebaseAction((context, key) => {
+      removeProject: firebaseAction((context, key) => {
         projectsRef.child(key).update({ delete: true })
       }),
-      ADD_TASK: firebaseAction((context, obj) => {
+      addTask: firebaseAction((context, obj) => {
         const children = projectsRef.child(`${obj['.key']}/children`)
         let tasks = []
         children.on('value', snap => {
@@ -127,36 +127,36 @@ const store = () => {
           children.set([newTask])
         }
       }),
-      EDIT_TASK: firebaseAction((context, obj) => {
+      editTask: firebaseAction((context, obj) => {
         projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ name: obj.name })
       }),
-      REMOVE_TASK: firebaseAction((context, obj) => {
+      removeTask: firebaseAction((context, obj) => {
         projectsRef.child(`${obj['.key']}/children/${obj['index']}`).update({ delete: obj.delete })
       }),
-      GET_EVENTS: firebaseAction(({ bindFirebaseRef }, { uid }) => {
+      getEvents: firebaseAction(({ bindFirebaseRef }, { uid }) => {
         bindFirebaseRef('events', eventsRef.orderByChild('uid').equalTo(uid))
       }),
-      ADD_EVENT: firebaseAction((context, obj) => {
+      addEvent: firebaseAction((context, obj) => {
         eventsRef.push(obj)
       }),
-      EDIT_EVENT: firebaseAction((context, obj) => {
+      editEvent: firebaseAction((context, obj) => {
         const key = obj['.key']
         delete obj['.key']
         eventsRef.child(key).update(obj)
       }),
-      REMOVE_EVENT: firebaseAction((context, key) => {
+      removeEvent: firebaseAction((context, key) => {
         eventsRef.child(key).remove()
       }),
-      SET_TARGET_TASK({ commit }, { targetTask }) {
+      setTargetTask({ commit }, { targetTask }) {
         commit('setTargetTask', { targetTask })
       },
-      SET_OPTION({ commit }) {
+      setOption({ commit }) {
         commit('setOption')
       },
-      GET_OPTION({ commit }) {
+      getOption({ commit }) {
         commit('getOption')
       },
-      UPDATE_CALENDAR({ commit }, updateCalendar) {
+      updateCalendar({ commit }, updateCalendar) {
         commit('updateCalendar', updateCalendar)
       }
     }

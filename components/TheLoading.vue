@@ -15,12 +15,12 @@ export default {
     ...mapGetters(['loading'])
   },
   methods: {
-    ...mapActions(['SET_LOADING']),
+    ...mapActions(['setLoading']),
     start() {
-      this.SET_LOADING({ loading: true })
+      this.setLoading({ loading: true })
     },
     finish() {
-      this.SET_LOADING({ loading: false })
+      this.setLoading({ loading: false })
     }
   }
 }
