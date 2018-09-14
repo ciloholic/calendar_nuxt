@@ -77,7 +77,7 @@
       </el-form>
       <span slot="footer">
         <el-button @click="projectAddDialog = false;resetProjectForm();">キャンセル</el-button>
-        <el-button type="primary" @click="addProject" :disabled="disableProjectButton()">追加</el-button>
+        <el-button type="primary" @click="addProjectClick" :disabled="disableProjectButton()">追加</el-button>
       </span>
     </el-dialog>
     <!-- dialog - edit project -->
@@ -93,8 +93,8 @@
       </el-form>
       <span slot="footer">
         <el-button @click="projectEditDialog = false;resetProjectForm();">キャンセル</el-button>
-        <el-button type="danger" @click="removeProject">削除</el-button>
-        <el-button type="primary" @click="editProject" :disabled="disableProjectButton()">更新</el-button>
+        <el-button type="danger" @click="removeProjectClick">削除</el-button>
+        <el-button type="primary" @click="editProjectClick" :disabled="disableProjectButton()">更新</el-button>
       </span>
     </el-dialog>
     <!-- dialog - add task -->
@@ -106,7 +106,7 @@
       </el-form>
       <span slot="footer">
         <el-button @click="taskAddDialog = false;resetTaskForm();">キャンセル</el-button>
-        <el-button type="primary" @click="addTask" :disabled="disableTaskButton()">追加</el-button>
+        <el-button type="primary" @click="addTaskClick" :disabled="disableTaskButton()">追加</el-button>
       </span>
     </el-dialog>
     <!-- dialog - edit task -->
@@ -118,8 +118,8 @@
       </el-form>
       <span slot="footer">
         <el-button @click="taskEditDialog = false;resetTaskForm();">キャンセル</el-button>
-        <el-button type="danger" @click="removeTask">削除</el-button>
-        <el-button type="primary" @click="editTask" :disabled="disableTaskButton()">更新</el-button>
+        <el-button type="danger" @click="removeTaskClick">削除</el-button>
+        <el-button type="primary" @click="editTaskClick" :disabled="disableTaskButton()">更新</el-button>
       </span>
     </el-dialog>
   </el-aside>
@@ -195,7 +195,7 @@ export default {
           type !== 'inner')
       )
     },
-    addProject() {
+    addProjectClick() {
       const obj = {
         uid: this.user.uid,
         name: this.projectForm.name,
@@ -206,7 +206,7 @@ export default {
       this.resetProjectForm()
       this.projectAddDialog = false
     },
-    editProject() {
+    editProjectClick() {
       const obj = { '.key': this.projectForm.data['.key'], name: this.projectForm.name, color: this.projectForm.color }
       this.editProject(obj)
       this.resetProjectForm()
@@ -220,7 +220,7 @@ export default {
       this.projectForm.data = data
       this.projectEditDialog = true
     },
-    removeProject() {
+    removeProjectClick() {
       this.$confirm('本当にプロジェクトを削除しますか？', '確認', {
         confirmButtonText: 'はい',
         cancelButtonText: 'いいえ',
@@ -250,7 +250,7 @@ export default {
       this.projectForm.node = null
       this.projectForm.data = null
     },
-    addTask() {
+    addTaskClick() {
       const obj = { '.key': this.taskForm.data['.key'], name: this.taskForm.name }
       this.addTask(obj)
       this.resetTaskForm()
@@ -262,7 +262,7 @@ export default {
       this.taskForm.data = data
       this.taskAddDialog = true
     },
-    editTask() {
+    editTaskClick() {
       const parent = this.taskForm.node.parent
       const children = parent.data.children
       const index = children.findIndex(d => d.id === this.taskForm.data.id)
@@ -278,7 +278,7 @@ export default {
       this.taskForm.data = data
       this.taskEditDialog = true
     },
-    removeTask() {
+    removeTaskClick() {
       this.$confirm('本当にタスクを削除しますか？', '確認', {
         confirmButtonText: 'はい',
         cancelButtonText: 'いいえ',
