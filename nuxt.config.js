@@ -16,7 +16,7 @@ module.exports = {
   loading: '~/components/TheLoading.vue',
   router: { middleware: 'auth' },
   plugins: ['~/plugins/element-ui.js'],
-  modules: ['@nuxtjs/dotenv'],
+  modules: ['@nuxtjs/dotenv', ['@nuxtjs/moment', ['ja']]],
   build: {
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {
