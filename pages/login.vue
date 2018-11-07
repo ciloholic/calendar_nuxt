@@ -1,7 +1,5 @@
 <template>
-  <el-container>
-    <the-login></the-login>
-  </el-container>
+  <el-container> <the-login></the-login> </el-container>
 </template>
 
 <script>

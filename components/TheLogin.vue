@@ -1,8 +1,6 @@
 <template>
   <el-main>
-    <a v-if="!loading" class="googleSignin" @click="doLogin">
-      <img src="~/static/btn_google_signin.png">
-    </a>
+    <a v-if="!loading" class="googleSignin" @click="doLogin"> <img src="~/static/btn_google_signin.png" /> </a>
   </el-main>
 </template>
 

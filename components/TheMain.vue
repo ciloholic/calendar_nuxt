@@ -2,9 +2,7 @@
   <el-main>
     <!-- header -->
     <div ref="weekLabel" class="weekLabel">
-      <div class="weekLabel__item">
-        <el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button>
-      </div>
+      <div class="weekLabel__item"><el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button></div>
       <div class="weekLabel__item">{{ labelWeekText }}</div>
       <div class="weekLabel__item">
         <el-button size="mini" @click="onNextClick">Next<i class="el-icon-arrow-right el-icon-right"></i></el-button>
@@ -19,50 +17,32 @@
       </ul>
     </div>
     <!-- calendar -->
-    <div v-for="(_, w) in weekList" :key="w" class="calendar" :class="{today: isToday(days[w])}">
+    <div v-for="(_, w) in weekList" :key="w" class="calendar" :class="{ today: isToday(days[w]) }">
       <div class="dayLabel">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
-      <ul
-        @mousedown="dragMousedown"
-        @mouseup="mouseup"
-        @mouseleave="mouseleave"
-        @mousemove="mousemove">
+      <ul @mousedown="dragMousedown" @mouseup="mouseup" @mouseleave="mouseleave" @mousemove="mousemove">
         <!-- time list -->
-        <li
-          v-for="t in timeList"
-          :key="t.id"
-          :class="`dayTime m${t.mm}`"
-          :data-date="`${formatTime(days[w], 'YYYY-MM-DD')} ${t.id}`">
-        </li>
+        <li v-for="t in timeList" :key="t.id" :class="`dayTime m${t.mm}`" :data-date="`${formatTime(days[w], 'YYYY-MM-DD')} ${t.id}`"></li>
         <!-- event list -->
         <transition-group name="event">
           <div
             v-for="event in dayEvent(days[w])"
             class="eventList"
-            :class="{moved: moveTarget.flag && event['.key'] === moveTarget.key }"
+            :class="{ moved: moveTarget.flag && event['.key'] === moveTarget.key }"
             :key="event['.key']"
             :data-key="event['.key']"
             :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
             :style="setStyle(event)"
             @mousedown.stop="moveMousedown"
             @mouseup.stop="mouseup"
-            @mousemove.stop="mousemove">
+            @mousemove.stop="mousemove"
+          >
             {{ event.name }}
-            <div class="eventList__after"
-              @mousedown.stop="resizeMousedown"
-              @mouseup.stop="mouseup"
-              @mousemove.stop="mousemove">
-            </div>
-            <div @click.stop="removeClick" class="eventList__remove">
-              <i class="el-icon-close"></i>
-            </div>
+            <div class="eventList__after" @mousedown.stop="resizeMousedown" @mouseup.stop="mouseup" @mousemove.stop="mousemove"></div>
+            <div @click.stop="removeClick" class="eventList__remove"><i class="el-icon-close"></i></div>
           </div>
         </transition-group>
         <!-- target event -->
-        <div
-          v-if="dragTarget.flag && isTargetDay(days[w])"
-          class="eventList target"
-          :style="setStyle(dragTarget, true)">
-        </div>
+        <div v-if="dragTarget.flag && isTargetDay(days[w])" class="eventList target" :style="setStyle(dragTarget, true)"></div>
       </ul>
     </div>
   </el-main>

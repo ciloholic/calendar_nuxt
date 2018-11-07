@@ -19,30 +19,24 @@
       @node-click="nodeClick"
       highlight-current
       draggable
-      :allow-drop="allowDrop">
+      :allow-drop="allowDrop"
+    >
       <div class="nodeTree" slot-scope="{ node, data }">
-        <div class="nodeTree__label" :class="{nodeTree__child: !isParent(node)}">{{ node.label }}</div>
+        <div class="nodeTree__label" :class="{ nodeTree__child: !isParent(node) }">{{ node.label }}</div>
         <el-button v-if="isParent(node)" type="text" size="mini" class="nodeTree__addButton" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-circle-plus" :style="`color: ${convRgba(data.color, 1)};`"></i>
         </el-button>
         <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
           <i class="el-icon-edit"></i>
         </el-button>
-        <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)">
-          <i class="el-icon-edit"></i>
-        </el-button>
+        <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)"> <i class="el-icon-edit"></i> </el-button>
       </div>
     </el-tree>
     <!-- dialog - option -->
     <el-dialog custom-class="optionDialog" title="オプション" width="30%" :visible.sync="optionDialog" :before-close="beforeClose">
       <el-form :model="optionForm">
         <el-form-item label="土日" label-width="30%">
-          <el-switch
-            v-model="optionForm.weekday"
-            @change="updateOption"
-            active-text="表示"
-            inactive-text="非表示">
-          </el-switch>
+          <el-switch v-model="optionForm.weekday" @change="updateOption" active-text="表示" inactive-text="非表示"> </el-switch>
         </el-form-item>
         <el-form-item label="開始時刻" label-width="30%">
           <el-time-select
@@ -50,7 +44,8 @@
             v-model="optionForm.startTime"
             @change="updateOption"
             :picker-options="{ start: '00:00', step: '01:00', end: '11:00' }"
-            :clearable="false">
+            :clearable="false"
+          >
           </el-time-select>
         </el-form-item>
         <el-form-item label="終了時刻" label-width="30%">
@@ -58,8 +53,9 @@
             placeholder="End time"
             v-model="optionForm.endTime"
             @change="updateOption"
-            :picker-options="{ start: '15:00', step: '01:00', end: '23:00', minTime: optionForm.startTime}"
-            :clearable="false">
+            :picker-options="{ start: '15:00', step: '01:00', end: '23:00', minTime: optionForm.startTime }"
+            :clearable="false"
+          >
           </el-time-select>
         </el-form-item>
       </el-form>
@@ -67,32 +63,34 @@
     <!-- dialog - add project -->
     <el-dialog title="プロジェクト追加" width="35%" :visible.sync="projectAddDialog">
       <el-form :model="projectForm">
-        <el-form-item label="プロジェクト名:">
-          <el-input v-model="projectForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="カラーコード:">
-          <el-color-picker v-model="projectForm.color">
-          </el-color-picker>
-        </el-form-item>
+        <el-form-item label="プロジェクト名:"> <el-input v-model="projectForm.name"></el-input> </el-form-item>
+        <el-form-item label="カラーコード:"> <el-color-picker v-model="projectForm.color"> </el-color-picker> </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="projectAddDialog = false;resetProjectForm();">キャンセル</el-button>
+        <el-button
+          @click="
+            projectAddDialog = false
+            resetProjectForm()
+          "
+          >キャンセル</el-button
+        >
         <el-button type="primary" @click="addProjectClick" :disabled="disableProjectButton()">追加</el-button>
       </span>
     </el-dialog>
     <!-- dialog - edit project -->
     <el-dialog title="プロジェクト編集" width="35%" :visible.sync="projectEditDialog">
       <el-form :model="projectForm">
-        <el-form-item label="プロジェクト名:">
-          <el-input v-model="projectForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="カラーコード:">
-          <el-color-picker v-model="projectForm.color">
-          </el-color-picker>
-        </el-form-item>
+        <el-form-item label="プロジェクト名:"> <el-input v-model="projectForm.name"></el-input> </el-form-item>
+        <el-form-item label="カラーコード:"> <el-color-picker v-model="projectForm.color"> </el-color-picker> </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="projectEditDialog = false;resetProjectForm();">キャンセル</el-button>
+        <el-button
+          @click="
+            projectEditDialog = false
+            resetProjectForm()
+          "
+          >キャンセル</el-button
+        >
         <el-button type="danger" @click="removeProjectClick">削除</el-button>
         <el-button type="primary" @click="editProjectClick" :disabled="disableProjectButton()">更新</el-button>
       </span>
@@ -100,24 +98,32 @@
     <!-- dialog - add task -->
     <el-dialog title="タスク追加" width="35%" :visible.sync="taskAddDialog">
       <el-form :model="taskForm">
-        <el-form-item label="タスク名:">
-          <el-input v-model="taskForm.name"></el-input>
-        </el-form-item>
+        <el-form-item label="タスク名:"> <el-input v-model="taskForm.name"></el-input> </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="taskAddDialog = false;resetTaskForm();">キャンセル</el-button>
+        <el-button
+          @click="
+            taskAddDialog = false
+            resetTaskForm()
+          "
+          >キャンセル</el-button
+        >
         <el-button type="primary" @click="addTaskClick" :disabled="disableTaskButton()">追加</el-button>
       </span>
     </el-dialog>
     <!-- dialog - edit task -->
     <el-dialog title="タスク編集" width="35%" :visible.sync="taskEditDialog">
       <el-form :model="taskForm">
-        <el-form-item label="タスク名:">
-          <el-input v-model="taskForm.name"></el-input>
-        </el-form-item>
+        <el-form-item label="タスク名:"> <el-input v-model="taskForm.name"></el-input> </el-form-item>
       </el-form>
       <span slot="footer">
-        <el-button @click="taskEditDialog = false;resetTaskForm();">キャンセル</el-button>
+        <el-button
+          @click="
+            taskEditDialog = false
+            resetTaskForm()
+          "
+          >キャンセル</el-button
+        >
         <el-button type="danger" @click="removeTaskClick">削除</el-button>
         <el-button type="primary" @click="editTaskClick" :disabled="disableTaskButton()">更新</el-button>
       </span>
