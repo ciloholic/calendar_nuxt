@@ -1,33 +1,33 @@
 <template>
   <el-main>
     <!-- header -->
-    <div ref="weekLabel" class="weekLabel">
-      <div class="weekLabel__item"><el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button></div>
-      <div class="weekLabel__item">{{ labelWeekText }}</div>
-      <div class="weekLabel__item">
+    <div class="week-label" ref="weekLabel">
+      <div class="week-label__item"><el-button icon="el-icon-arrow-left" size="mini" @click="onPrevClick">Prev</el-button></div>
+      <div class="week-label__item">{{ labelWeekText }}</div>
+      <div class="week-label__item">
         <el-button size="mini" @click="onNextClick">Next<i class="el-icon-arrow-right el-icon-right"></i></el-button>
       </div>
     </div>
     <!-- time line -->
-    <div ref="timeLine" class="timeLine"></div>
+    <div class="time-line" ref="timeLine"></div>
     <!-- side label -->
-    <div ref="sideLabel" class="sideLabel">
+    <div class="side-label" ref="sideLabel">
       <ul>
         <li v-for="d in dayList" :key="d">{{ d + ':00' }}</li>
       </ul>
     </div>
     <!-- calendar -->
-    <div v-for="(_, w) in weekList" :key="w" class="calendar" :class="{ today: isToday(days[w]) }">
-      <div class="dayLabel">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
+    <div class="calendar" :class="{ today: isToday(days[w]) }" v-for="(_, w) in weekList" :key="w">
+      <div class="day-label">{{ formatTime(days[w], 'MM/DD(ddd)') }}</div>
       <ul @mousedown="dragMousedown" @mouseup="mouseup" @mouseleave="mouseleave" @mousemove="mousemove">
         <!-- time list -->
-        <li v-for="t in timeList" :key="t.id" :class="`dayTime m${t.mm}`" :data-date="`${formatTime(days[w], 'YYYY-MM-DD')} ${t.id}`"></li>
+        <li :class="`day-time m${t.mm}`" v-for="t in timeList" :key="t.id" :data-date="`${formatTime(days[w], 'YYYY-MM-DD')} ${t.id}`"></li>
         <!-- event list -->
         <transition-group name="event">
           <div
-            v-for="event in dayEvent(days[w])"
-            class="eventList"
+            class="event-list"
             :class="{ moved: moveTarget.flag && event['.key'] === moveTarget.key }"
+            v-for="event in dayEvent(days[w])"
             :key="event['.key']"
             :data-key="event['.key']"
             :data-datetime="formatTime(event.datetime, 'YYYY-MM-DD HH:mm:ss')"
@@ -37,19 +37,19 @@
             @mousemove.stop="mousemove"
           >
             {{ event.name }}
-            <div class="eventList__after" @mousedown.stop="resizeMousedown" @mouseup.stop="mouseup" @mousemove.stop="mousemove"></div>
-            <div @click.stop="removeClick" class="eventList__remove"><i class="el-icon-close"></i></div>
+            <div class="event-list--after" @mousedown.stop="resizeMousedown" @mouseup.stop="mouseup" @mousemove.stop="mousemove"></div>
+            <div class="event-list--remove" @click.stop="removeClick"><i class="el-icon-close"></i></div>
           </div>
         </transition-group>
         <!-- target event -->
-        <div v-if="dragTarget.flag && isTargetDay(days[w])" class="eventList target" :style="setStyle(dragTarget, true)"></div>
+        <div v-if="dragTarget.flag && isTargetDay(days[w])" class="event-list event-list--target" :style="setStyle(dragTarget, true)"></div>
       </ul>
     </div>
   </el-main>
 </template>
 
 <script>
-import Common from '~/components/BaseCommon'
+import BaseCommon from '~/components/BaseCommon'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 
@@ -324,7 +324,7 @@ export default {
   beforeDestroy() {
     clearInterval(this.intervalId)
   },
-  mixins: [Common]
+  mixins: [BaseCommon]
 }
 </script>
 
@@ -344,18 +344,18 @@ export default {
   cursor: crosshair;
 }
 
-.weekLabel {
+.week-label {
   display: flex;
   justify-content: space-between;
   width: 100vw;
   margin-bottom: 12px;
 
   &__item {
-    font-size: 15px;
+    font-size: 1em;
   }
 }
 
-.sideLabel {
+.side-label {
   display: flex;
 
   ul {
@@ -365,7 +365,7 @@ export default {
     align-items: flex-end;
     font-size: 10px;
     line-height: 1em;
-    padding: 26px 6px 43px 0;
+    padding: 18px 6px 43px 0;
   }
 }
 
@@ -381,16 +381,16 @@ export default {
     background: rgba(255, 255, 255, 0.1);
   }
 
-  .dayLabel {
-    font-size: 12px;
+  .day-label {
+    font-size: 0.8em;
     text-align: center;
     padding: 3px 0;
   }
 
-  .dayTime {
+  .day-time {
     width: 100%;
     height: 12px;
-    font-size: 10px;
+    font-size: 1em;
 
     &:hover {
       background: #999;
@@ -422,7 +422,7 @@ export default {
     border-right: 1px solid #888;
   }
 
-  .eventList {
+  .event-list {
     border: 1px solid #fff;
     width: 100%;
     position: absolute;
@@ -441,7 +441,7 @@ export default {
       opacity: 0.5;
     }
 
-    &__after {
+    &--after {
       display: none;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 10px 10px 0 0;
@@ -453,7 +453,7 @@ export default {
       cursor: row-resize;
     }
 
-    &__remove {
+    &--remove {
       display: none;
       background: rgba(255, 255, 255, 0.3);
       justify-content: center;
@@ -470,8 +470,8 @@ export default {
     &:hover {
       overflow: hidden;
 
-      .eventList__after,
-      .eventList__remove {
+      .event-list--after,
+      .event-list--remove {
         display: flex;
       }
     }
@@ -490,7 +490,7 @@ export default {
   }
 }
 
-.timeLine {
+.time-line {
   display: none;
   border-top: 1px solid #dd8a61;
   height: 1px;

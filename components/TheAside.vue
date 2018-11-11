@@ -1,14 +1,14 @@
 <template>
   <el-aside width="100vw">
     <!-- option button -->
-    <div class="optionButton">
+    <div class="option-button">
       <el-button type="info" size="mini" @click="optionDialog = true">オプション</el-button>
       <el-button type="danger" size="mini" @click="googleLogout()">ログアウト</el-button>
     </div>
     <!-- search -->
     <el-input size="mini" placeholder="タスクを検索" v-model="filterKeyword"></el-input>
     <!-- project add button -->
-    <el-button type="primary" size="mini" class="projectAddButton" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
+    <el-button class="project-add-button" type="primary" size="mini" @click="projectAddDialog = true">新規プロジェクト追加</el-button>
     <!-- project node tree -->
     <el-tree
       :data="showProjects"
@@ -21,19 +21,19 @@
       draggable
       :allow-drop="allowDrop"
     >
-      <div class="nodeTree" slot-scope="{ node, data }">
-        <div class="nodeTree__label" :class="{ nodeTree__child: !isParent(node) }">{{ node.label }}</div>
-        <el-button v-if="isParent(node)" type="text" size="mini" class="nodeTree__addButton" @click.stop="addTaskButton(node, data)">
+      <div class="node-tree" slot-scope="{ node, data }">
+        <div class="node-tree__label" :class="{ 'node-tree__child': !isParent(node) }">{{ node.label }}</div>
+        <el-button v-if="isParent(node)" class="node-tree__add-button" type="text" size="mini" @click.stop="addTaskButton(node, data)">
           <i class="el-icon-circle-plus" :style="`color: ${convRgba(data.color, 1)};`"></i>
         </el-button>
         <el-button v-if="isParent(node)" type="text" size="mini" @click.stop="editProjectButton(node, data)">
           <i class="el-icon-edit"></i>
         </el-button>
-        <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)"> <i class="el-icon-edit"></i> </el-button>
+        <el-button v-if="!isParent(node)" type="text" size="mini" @click.stop="editTaskButton(node, data)"><i class="el-icon-edit"></i></el-button>
       </div>
     </el-tree>
     <!-- dialog - option -->
-    <el-dialog custom-class="optionDialog" title="オプション" width="30%" :visible.sync="optionDialog" :before-close="beforeClose">
+    <el-dialog custom-class="option-dialog" title="オプション" width="30%" :visible.sync="optionDialog" :before-close="beforeClose">
       <el-form :model="optionForm">
         <el-form-item label="土日" label-width="30%">
           <el-switch v-model="optionForm.weekday" @change="updateOption" active-text="表示" inactive-text="非表示"> </el-switch>
@@ -72,16 +72,16 @@
             projectAddDialog = false
             resetProjectForm()
           "
-          >キャンセル</el-button
-        >
+          >キャンセル
+        </el-button>
         <el-button type="primary" @click="addProjectClick" :disabled="disableProjectButton()">追加</el-button>
       </span>
     </el-dialog>
     <!-- dialog - edit project -->
     <el-dialog title="プロジェクト編集" width="35%" :visible.sync="projectEditDialog">
       <el-form :model="projectForm">
-        <el-form-item label="プロジェクト名:"> <el-input v-model="projectForm.name"></el-input> </el-form-item>
-        <el-form-item label="カラーコード:"> <el-color-picker v-model="projectForm.color"> </el-color-picker> </el-form-item>
+        <el-form-item label="プロジェクト名:"><el-input v-model="projectForm.name"></el-input></el-form-item>
+        <el-form-item label="カラーコード:"><el-color-picker v-model="projectForm.color"></el-color-picker></el-form-item>
       </el-form>
       <span slot="footer">
         <el-button
@@ -89,8 +89,8 @@
             projectEditDialog = false
             resetProjectForm()
           "
-          >キャンセル</el-button
-        >
+          >キャンセル
+        </el-button>
         <el-button type="danger" @click="removeProjectClick">削除</el-button>
         <el-button type="primary" @click="editProjectClick" :disabled="disableProjectButton()">更新</el-button>
       </span>
@@ -106,8 +106,8 @@
             taskAddDialog = false
             resetTaskForm()
           "
-          >キャンセル</el-button
-        >
+          >キャンセル
+        </el-button>
         <el-button type="primary" @click="addTaskClick" :disabled="disableTaskButton()">追加</el-button>
       </span>
     </el-dialog>
@@ -122,8 +122,8 @@
             taskEditDialog = false
             resetTaskForm()
           "
-          >キャンセル</el-button
-        >
+          >キャンセル
+        </el-button>
         <el-button type="danger" @click="removeTaskClick">削除</el-button>
         <el-button type="primary" @click="editTaskClick" :disabled="disableTaskButton()">更新</el-button>
       </span>
@@ -363,7 +363,7 @@ export default {
     }
   }
 
-  .optionButton {
+  .option-button {
     display: flex;
     justify-content: center;
     margin-bottom: 10px;
@@ -377,7 +377,7 @@ export default {
     }
   }
 
-  .projectAddButton {
+  .project-add-button {
     width: 100%;
     margin-bottom: 10px;
   }
@@ -386,7 +386,7 @@ export default {
     margin-bottom: 10px;
     border-radius: 3px;
 
-    .nodeTree {
+    .node-tree {
       flex: 1;
       display: flex;
       align-items: center;
@@ -412,7 +412,7 @@ export default {
         font-size: 0.6em;
       }
 
-      &__addButton {
+      &__add-button {
         margin-left: auto;
       }
     }
